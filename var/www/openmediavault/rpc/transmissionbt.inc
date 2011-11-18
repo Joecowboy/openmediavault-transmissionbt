@@ -66,37 +66,37 @@ class TransmissionBTRpc extends OMVRpc {
 			"setBandwidth" => array('{
 				"type":"object",
 				"properties":{
-					"speed-limit-down":{"type":"integer"},
+					"speed-limit-down":{"type":"integer","minimum":0},
 					"speed-limit-down-enabled":{"type":"boolean"},
-					"speed-limit-up":{"type":"integer"},
+					"speed-limit-up":{"type":"integer","minimum":0},
 					"speed-limit-up-enabled":{"type":"boolean"},
 					"upload-slots-per-torrent":{"type":"integer"},
 					
 					"alt-speed-enabled":{"type":"boolean"},
-					"alt-speed-up":{"type":"integer"},
-					"alt-speed-down":{"type":"integer"}
+					"alt-speed-up":{"type":"integer","minimum":0},
+					"alt-speed-down":{"type":"integer","minimum":0}
 				}
 			}'),
 			"setQueuing" => array('{
 				"type":"object",
 				"properties":{
 					"queue-stalled-enabled":{"type":"boolean"},
-					"queue-stalled-minutes":{"type":"integer"},
+					"queue-stalled-minutes":{"type":"integer","minimum":0},
 					
 					"download-queue-enabled":{"type":"boolean"},
-					"download-queue-size":{"type":"integer"},
+					"download-queue-size":{"type":"integer","minimum":0},
 					
 					"seed-queue-enabled":{"type":"boolean"},
-					"seed-queue-size":{"type":"integer"}
+					"seed-queue-size":{"type":"integer","minimum":0}
 				}
 			}'),
 			"setPeer" => array('{
 				"type":"object",
 				"properties":{
-					"bind-address-ipv4":{"type":"string"},
+					"bind-address-ipv4":{"type":"string","format":"regex","pattern":"/^[0-9]{1,3}\\\.[0-9]{1,3}\\\.[0-9]{1,3}\\\.[0-9]{1,3}/"},
 					"bind-address-ipv6":{"type":"string"},
-					"peer-limit-global":{"type":"integer"},
-					"peer-limit-per-torrent":{"type":"integer"},
+					"peer-limit-global":{"type":"integer","minimum":0},
+					"peer-limit-per-torrent":{"type":"integer","minimum":0},
 					"peer-socket-tos":{"type":"string","enum":'.'["default","lowcost","throughput","lowdelay","reliability"]},
 					
 					"peer-port":{"type":"integer","minimum":1024,"maximum":65535},
@@ -294,11 +294,18 @@ class TransmissionBTRpc extends OMVRpc {
 		}
 		// Modify result data
 		// Speed
+		$object['speed-limit-down'] = intval($object['speed-limit-down']);
 		$object['speed-limit-down-enabled'] = boolval($object['speed-limit-down-enabled']);
+		
+		$object['speed-limit-up'] = intval($object['speed-limit-up']);
 		$object['speed-limit-up-enabled'] = boolval($object['speed-limit-up-enabled']);
+		
+		$object['upload-slots-per-torrent'] = intval($object['upload-slots-per-torrent']);
 		
 		// Turtle Mode
 		$object['alt-speed-enabled'] = boolval($object['alt-speed-enabled']);
+		$object['alt-speed-up'] = intval($object['alt-speed-up']);
+		$object['alt-speed-down'] = intval($object['alt-speed-down']);
 		
 		return $object;
 	}
@@ -368,12 +375,15 @@ class TransmissionBTRpc extends OMVRpc {
 		// Modify result data
 		// General
 		$object['queue-stalled-enabled'] = boolval($object['queue-stalled-enabled']);
+		$object['queue-stalled-minutes'] = intval($object['queue-stalled-minutes']);
 		
 		// Download
 		$object['download-queue-enabled'] = boolval($object['download-queue-enabled']);
+		$object['download-queue-size'] = intval($object['download-queue-size']);
 		
 		// Seed
 		$object['seed-queue-enabled'] = boolval($object['seed-queue-enabled']);
+		$object['seed-queue-size'] = intval($object['seed-queue-size']);
 		
 		return $object;
 	}
@@ -441,7 +451,15 @@ class TransmissionBTRpc extends OMVRpc {
 			  $xpath);
 		}
 		// Modify result data
+		// Peers
+		// Limits
+		$object['peer-limit-global'] = intval($object['peer-limit-global']);
+		$object['peer-limit-per-torrent'] = intval($object['peer-limit-per-torrent']);
+		
 		// Peer Ports
+		$object['peer-port'] = intval($object['peer-port']);
+		$object['peer-port-random-high'] = intval($object['peer-port-random-high']);
+		$object['peer-port-random-low'] = intval($object['peer-port-random-low']);
 		$object['peer-port-random-on-start'] = boolval($object['peer-port-random-on-start']);
 		$object['port-forwarding-enabled'] = boolval($object['port-forwarding-enabled']);
 		
