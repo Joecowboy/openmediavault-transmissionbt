@@ -311,35 +311,35 @@ Ext.extend(OMV.Module.Services.TransmissionBTFilesAndLocationsPanel, OMV.FormPan
 			items: [{
 				xtype: "textfield",
 				name: "download-dir",
-				fieldLabel: "Download",
+				fieldLabel: "Download directory",
 				allowBlank: true,
 				plugins: [ OMV.form.plugins.FieldInfo ],
-				infoText: "Directory to keep downloads. If Incomplete is enabled, only complete Downloads will be stored here."			
+				infoText: "Directory to keep downloads. If incomplete is enabled, only complete downloads will be stored here."
 			},{
 				xtype: "textfield",
 				name: "incomplete-dir",
-				fieldLabel: "Incomplete",
+				fieldLabel: "Incomplete directory",
 				allowBlank: false,
 				plugins: [ OMV.form.plugins.FieldInfo ],
 				infoText: "Directory to keep files in until torrent is complete."
 			},{
 				xtype: "checkbox",
 				name: "incomplete-dir-enabled",
-				fieldLabel: "Enable",
+				fieldLabel: "Incomplete",
 				checked: false,
 				inputValue: 1,
 				boxLabel: "Enable incomplete directory."
 			},{
 				xtype: "textfield",
 				name: "watch-dir",
-				fieldLabel: "Watch",
+				fieldLabel: "Watch directory",
 				allowBlank: false,
 				plugins: [ OMV.form.plugins.FieldInfo ],
 				infoText: "Watch a directory for torrent files and add them to transmission"
 			},{
 				xtype: "checkbox",
 				name: "watch-dir-enabled",
-				fieldLabel: "Enable",
+				fieldLabel: "Watch",
 				checked: false,
 				inputValue: 1,
 				boxLabel: "Enable Watch directory."
@@ -372,7 +372,7 @@ Ext.extend(OMV.Module.Services.TransmissionBTFilesAndLocationsPanel, OMV.FormPan
 				triggerAction: "all",
 				value: 1,
 				plugins: [ OMV.form.plugins.FieldInfo ],
-				infoText: "Preallocate Files."
+				infoText: "Mode for preallocating files."
 			},{
 				xtype: "checkbox",
 				name: "rename-partial-files",
@@ -432,7 +432,9 @@ Ext.extend(OMV.Module.Services.TransmissionBTBandwidthPanel, OMV.FormPanelExt, {
 				name: "speed-limit-down",
 				fieldLabel: "Download",
 				allowBlank: false,
-				value: 100
+				value: 100,
+				plugins: [ OMV.form.plugins.FieldInfo ],
+				infoText: "Limit download speed. Value is kb/s."
 			},{
 				xtype: "checkbox",
 				name: "speed-limit-down-enabled",
@@ -445,7 +447,9 @@ Ext.extend(OMV.Module.Services.TransmissionBTBandwidthPanel, OMV.FormPanelExt, {
 				name: "speed-limit-up",
 				fieldLabel: "Upload",
 				allowBlank: false,
-				value: 100
+				value: 100,
+				plugins: [ OMV.form.plugins.FieldInfo ],
+				infoText: "Limit upload speed. Value is kb/s."
 			},{
 				xtype: "checkbox",
 				name: "speed-limit-up-enabled",
@@ -479,13 +483,17 @@ Ext.extend(OMV.Module.Services.TransmissionBTBandwidthPanel, OMV.FormPanelExt, {
 				name: "alt-speed-up",
 				fieldLabel: "Upload",
 				allowBlank: false,
-				value: 50
+				value: 50,
+				plugins: [ OMV.form.plugins.FieldInfo ],
+				infoText: "Turtle Mode upload speed. Value is kb/s."
 			},{
 				xtype: "numberfield",
 				name: "alt-speed-down",
 				fieldLabel: "Download",
 				allowBlank: false,
-				value: 50
+				value: 50,
+				plugins: [ OMV.form.plugins.FieldInfo ],
+				infoText: "Turtle Mode download speed. Value is kb/s."
 			}]
 		}];
 	}
