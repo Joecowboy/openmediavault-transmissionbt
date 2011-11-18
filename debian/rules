@@ -21,6 +21,9 @@ binary-indep: install
 
 	# Remove '.svn' directories
 	find $(CURDIR)/debian/openmediavault-transmissionbt -name .svn -type d -print0 -prune | xargs -0 rm -rf
+	
+	# Remove '.git' directories
+	find $(CURDIR)/debian/openmediavault-transmissionbt -name .git -type d -print0 -prune | xargs -0 rm -rf
 
 	dh_installchangelogs
 	dh_installdebconf
