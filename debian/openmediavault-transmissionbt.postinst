@@ -92,6 +92,11 @@ case "$1" in
 			omv_config_add_element "//services" "transmissionbt" "${object}" true
 		fi
 		
+		if ! omv_config_exists "//services/transmissionbt/modules"; then
+			echo "Updateing configuration"
+			omv_config_add_element "//services" "transmissionbt" "<modules></modules>" true
+		fi
+		
 		if ! omv_config_exists "//services/transmissionbt/modules/locationsandfiles"; then
 			echo "Updating configuration"
 			object="<download-dir></download-dir>"
@@ -103,7 +108,7 @@ case "$1" in
 			object="${object}<rename-partial-files>1</rename-partial-files>"
 			object="${object}<start-added-torrents>1</start-added-torrents>"
 			object="${object}<trash-original-torrent-files>0</trash-original-torrent-files>"
-			omv_config_add_element "//services" "transmissionbt/modules/locationsandfiles" "${object}" true
+			omv_config_add_element "//services/transmissionbt/modules" "locationsandfiles" "${object}" true
 		fi
 		
 		if ! omv_config_exists "//services/transmissionbt/modules/bandwidth"; then
@@ -116,7 +121,7 @@ case "$1" in
 			object="${object}<alt-speed-enabled>0</alt-speed-enabled>"
 			object="${object}<alt-speed-up>50</alt-speed-up>"
 			object="${object}<alt-speed-down>50</alt-speed-down>"
-			omv_config_add_element "//services" "transmissionbt/modules/bandwidth" "${object}" true
+			omv_config_add_element "//services/transmissionbt/modules" "bandwidth" "${object}" true
 		fi
 		
 		if ! omv_config_exists "//services/transmissionbt/modules/queuing"; then
@@ -127,7 +132,7 @@ case "$1" in
 			object="${object}<download-queue-size>5</download-queue-size>"
 			object="${object}<seed-queue-enabled>0</seed-queue-enabled>"
 			object="${object}<seed-queue-size>10</seed-queue-size>"
-			omv_config_add_element "//services" "transmissionbt/modules/queuing" "${object}" true
+			omv_config_add_element "//services/transmissionbt/modules" "queuing" "${object}" true
 		fi
 
 		########################################################################
