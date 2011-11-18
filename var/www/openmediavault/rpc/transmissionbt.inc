@@ -77,6 +77,19 @@ class TransmissionBTRpc extends OMVRpc {
 					"alt-speed-up":{"type":"integer"},
 					"alt-speed-down":{"type":"integer"}
 				}
+			}'),
+			"setQueuing" => array('{
+				"type":"object",
+				"properties":{
+					"queue-stalled-enabled":{"type":"boolean"},
+					"queue-stalled-minutes":{"type":"integer"},
+					
+					"download-queue-enabled":{"type":"boolean"},
+					"download-queue-size":{"type":"integer"},
+					
+					"seed-queue-enabled":{"type":"boolean"},
+					"seed-queue-size":{"type":"integer"}
+				}
 			}')
 		);
 	}
@@ -309,6 +322,81 @@ class TransmissionBTRpc extends OMVRpc {
 		);
 		// Set configuration object
 		$xpath = "//services/transmissionbt/modules/bandwidth";
+		if (FALSE === $xmlConfig->replace($xpath, $object)) {
+			throw new OMVException(OMVErrorMsg::E_CONFIG_SET_OBJECT_FAILED);
+		}
+		// Save configuration
+		if (FALSE === $xmlConfig->save()) {
+			throw new OMVException(OMVErrorMsg::E_CONFIG_SAVE_FAILED,
+			  $xmlConfig->getError());
+		}
+		// Notify configuration changes
+		$dispatcher = &OMVNotifyDispatcher::getInstance();
+		$dispatcher->notify(OMV_NOTIFY_MODIFY,
+		  "org.openmediavault.services.transmissionbt", $object);
+	}
+	
+	/**
+	 * Get configuration object.
+	 */
+	function getQueuing() {
+		global $xmlConfig;
+		// Check permissions
+		$this->validateSession();
+		if (!$this->hasRole(OMV_ROLE_ADMINISTRATOR)) {
+			throw new OMVException(OMVErrorMsg::E_RPC_SERVICE_INVALID_PERMISSION);
+		}
+		$this->commitSession();
+		// Get configuration object
+		$xpath = "//services/transmissionbt/modules/queuing";
+		$object = $xmlConfig->get($xpath);
+		if (is_null($object)) {
+			throw new OMVException(OMVErrorMsg::E_CONFIG_GET_OBJECT_FAILED,
+			  $xpath);
+		}
+		// Modify result data
+		// General
+		$object['queue-stalled-enabled'] = boolval($object['queue-stalled-enabled']);
+		
+		// Download
+		$object['download-queue-enabled'] = boolval($object['download-queue-enabled']);
+		
+		// Seed
+		$object['seed-queue-enabled'] = boolval($object['seed-queue-enabled']);
+		
+		return $object;
+	}
+
+	/**
+	 * Set configuration object.
+	 */
+	function setQueuing($data) {
+//		$this->debug(var_export(func_get_args(), TRUE));
+		global $xmlConfig;
+		// Check permissions
+		$this->validateSession();
+		if (!$this->hasRole(OMV_ROLE_ADMINISTRATOR)) {
+			throw new OMVException(OMVErrorMsg::E_RPC_SERVICE_INVALID_PERMISSION);
+		}
+		$this->commitSession();
+		// Validate method parameters
+		$this->validateParams(__METHOD__, func_get_args());
+		// Prepare configuration data
+		$object = array(
+			// General
+			"queue-stalled-enabled" => array_boolval($data, 'queue-stalled-enabled'),
+			"queue-stalled-minutes" => $data['queue-stalled-minutes'],
+			
+			// Download
+			"download-queue-enabled" => array_boolval($data, 'download-queue-enabled'),
+			"download-queue-size" => $data['download-queue-size'],
+			
+			// Seed
+			"seed-queue-enabled" => array_boolval($data, 'seed-queue-enabled'),
+			"seed-queue-size" => $data['seed-queue-size'],
+		);
+		// Set configuration object
+		$xpath = "//services/transmissionbt/modules/queuing";
 		if (FALSE === $xmlConfig->replace($xpath, $object)) {
 			throw new OMVException(OMVErrorMsg::E_CONFIG_SET_OBJECT_FAILED);
 		}

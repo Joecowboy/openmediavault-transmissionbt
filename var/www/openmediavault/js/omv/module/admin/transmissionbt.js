@@ -501,7 +501,9 @@ OMV.NavigationPanelMgr.registerPanel("services", "transmissionbt", {
  */
 OMV.Module.Services.TransmissionBTQueuingPanel = function(config) {
 	var initialConfig = {
-		rpcService: "TransmissionBT"
+		rpcService: "TransmissionBT",
+		rpcGetMethod: "getQueuing",
+		rpcSetMethod: "setQueuing"
 	};
 	Ext.apply(initialConfig, config);
 	OMV.Module.Services.TransmissionBTQueuingPanel.superclass.constructor.call(

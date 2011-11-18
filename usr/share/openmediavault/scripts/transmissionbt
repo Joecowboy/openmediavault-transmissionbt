@@ -132,7 +132,22 @@ xmlstarlet sel -t -m "//services/transmissionbt" \
   -i "modules/bandwidth/alt-speed-enabled[. = '1']" -o "true" -b \
   -o "," -n \
   -v "concat('&quot;alt-speed-up&quot;: ',modules/bandwidth/alt-speed-up,',')" -n \
-  -v "concat('&quot;alt-speed-down&quot;: ',modules/bandwidth/alt-speed-down,'')" -n \
+  -v "concat('&quot;alt-speed-down&quot;: ',modules/bandwidth/alt-speed-down,',')" -n \
+  -o "&quot;queue-stalled-enabled&quot;: " \
+  -i "modules/queuing/queue-stalled-enabled[. = '0']" -o "false" -b \
+  -i "modules/queuing/queue-stalled-enabled[. = '1']" -o "true" -b \
+  -o "," -n \
+  -v "concat('&quot;queue-stalled-minutes&quot;: ',modules/queuing/queue-stalled-minutes,',')" -n \
+  -o "&quot;download-queue-enabled&quot;: " \
+  -i "modules/queuing/download-queue-enabled[. = '0']" -o "false" -b \
+  -i "modules/queuing/download-queue-enabled[. = '1']" -o "true" -b \
+  -o "," -n \
+  -v "concat('&quot;download-queue-size&quot;: ',modules/queuing/download-queue-size,',')" -n \
+  -o "&quot;seed-queue-enabled&quot;: " \
+  -i "modules/queuing/seed-queue-enabled[. = '0']" -o "false" -b \
+  -i "modules/queuing/seed-queue-enabled[. = '1']" -o "true" -b \
+  -o "," -n \
+  -v "concat('&quot;seed-queue-size&quot;: ',modules/queuing/seed-queue-size,'')" -n \
   -o "}" \
   ${OMV_CONFIG_FILE} | xmlstarlet unesc > ${OMV_TRANSMISSIONBT_CONFIG}
 
