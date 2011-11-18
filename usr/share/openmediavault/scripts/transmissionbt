@@ -115,6 +115,24 @@ xmlstarlet sel -t -m "//services/transmissionbt" \
   -o "&quot;trash-original-torrent-files&quot;: " \
   -i "modules/locationsandfiles/trash-original-torrent-files[. = '0']" -o "false" -b \
   -i "modules/locationsandfiles/trash-original-torrent-files[. = '1']" -o "true" -b \
+  -o "," -n \
+  -v "concat('&quot;speed-limit-down&quot;: ',modules/bandwidth/speed-limit-down,',')" -n \
+  -o "&quot;speed-limit-down-enabled&quot;: " \
+  -i "modules/bandwidth/speed-limit-down-enabled[. = '0']" -o "false" -b \
+  -i "modules/bandwidth/speed-limit-down-enabled[. = '1']" -o "true" -b \
+  -o "," -n \
+  -v "concat('&quot;speed-limit-up&quot;: ',modules/bandwidth/speed-limit-up,',')" -n \
+  -o "&quot;speed-limit-up-enabled&quot;: " \
+  -i "modules/bandwidth/speed-limit-up-enabled[. = '0']" -o "false" -b \
+  -i "modules/bandwidth/speed-limit-up-enabled[. = '1']" -o "true" -b \
+  -o "," -n \
+  -v "concat('&quot;upload-slots-per-torrent&quot;: ',modules/bandwidth/upload-slots-per-torrent,',')" -n \
+  -o "&quot;alt-speed-enabled&quot;: " \
+  -i "modules/bandwidth/alt-speed-enabled[. = '0']" -o "false" -b \
+  -i "modules/bandwidth/alt-speed-enabled[. = '1']" -o "true" -b \
+  -o "," -n \
+  -v "concat('&quot;alt-speed-up&quot;: ',modules/bandwidth/alt-speed-up,',')" -n \
+  -v "concat('&quot;alt-speed-down&quot;: ',modules/bandwidth/alt-speed-down,'')" -n \
   -o "}" \
   ${OMV_CONFIG_FILE} | xmlstarlet unesc > ${OMV_TRANSMISSIONBT_CONFIG}
 

@@ -63,6 +63,20 @@ class TransmissionBTRpc extends OMVRpc {
 					"start-added-torrents":{"type":"boolean"},
 					"trash-original-torrent-files":{"type":"boolean"}
 				}
+			}'),
+			"setBandwidth" => array('{
+				"type":"object",
+				"properties":{
+					"speed-limit-down":{"type":"integer"},
+					"speed-limit-down-enabled":{"type":"boolean"},
+					"speed-limit-up":{"type":"integer"},
+					"speed-limit-up-enabled":{"type":"boolean"},
+					"upload-slots-per-torrent":{"type":"integer"},
+					
+					"alt-speed-enabled":{"type":"boolean"},
+					"alt-speed-up":{"type":"integer"},
+					"alt-speed-down":{"type":"integer"}
+				}
 			}')
 		);
 	}
@@ -222,6 +236,79 @@ class TransmissionBTRpc extends OMVRpc {
 		);
 		// Set configuration object
 		$xpath = "//services/transmissionbt/modules/locationsandfiles";
+		if (FALSE === $xmlConfig->replace($xpath, $object)) {
+			throw new OMVException(OMVErrorMsg::E_CONFIG_SET_OBJECT_FAILED);
+		}
+		// Save configuration
+		if (FALSE === $xmlConfig->save()) {
+			throw new OMVException(OMVErrorMsg::E_CONFIG_SAVE_FAILED,
+			  $xmlConfig->getError());
+		}
+		// Notify configuration changes
+		$dispatcher = &OMVNotifyDispatcher::getInstance();
+		$dispatcher->notify(OMV_NOTIFY_MODIFY,
+		  "org.openmediavault.services.transmissionbt", $object);
+	}
+	
+	/**
+	 * Get configuration object.
+	 */
+	function getBandwidth() {
+		global $xmlConfig;
+		// Check permissions
+		$this->validateSession();
+		if (!$this->hasRole(OMV_ROLE_ADMINISTRATOR)) {
+			throw new OMVException(OMVErrorMsg::E_RPC_SERVICE_INVALID_PERMISSION);
+		}
+		$this->commitSession();
+		// Get configuration object
+		$xpath = "//services/transmissionbt/modules/bandwidth";
+		$object = $xmlConfig->get($xpath);
+		if (is_null($object)) {
+			throw new OMVException(OMVErrorMsg::E_CONFIG_GET_OBJECT_FAILED,
+			  $xpath);
+		}
+		// Modify result data
+		// Speed
+		$object['speed-limit-down-enabled'] = boolval($object['speed-limit-down-enabled']);
+		$object['speed-limit-up-enabled'] = boolval($object['speed-limit-up-enabled']);
+		
+		// Turtle Mode
+		$object['alt-speed-enabled'] = boolval($object['alt-speed-enabled']);
+		
+		return $object;
+	}
+
+	/**
+	 * Set configuration object.
+	 */
+	function setBandwidth($data) {
+//		$this->debug(var_export(func_get_args(), TRUE));
+		global $xmlConfig;
+		// Check permissions
+		$this->validateSession();
+		if (!$this->hasRole(OMV_ROLE_ADMINISTRATOR)) {
+			throw new OMVException(OMVErrorMsg::E_RPC_SERVICE_INVALID_PERMISSION);
+		}
+		$this->commitSession();
+		// Validate method parameters
+		$this->validateParams(__METHOD__, func_get_args());
+		// Prepare configuration data
+		$object = array(
+			// Speed
+			"speed-limit-down" => $data['speed-limit-down'],
+			"speed-limit-down-enabled" => array_boolval($data, 'speed-limit-down-enabled'),
+			"speed-limit-up" => $data['speed-limit-up'],
+			"speed-limit-up-enabled" => array_boolval($data, 'speed-limit-up-enabled'),
+			"upload-slots-per-torrent" => $data['upload-slots-per-torrent'],
+			
+			// Turtle Mode
+			"alt-speed-enabled" => array_boolval($data, 'alt-speed-enabled'),
+			"alt-speed-up" => $data['alt-speed-up'],
+			"alt-speed-down" => $data['alt-speed-down'],
+		);
+		// Set configuration object
+		$xpath = "//services/transmissionbt/modules/bandwidth";
 		if (FALSE === $xmlConfig->replace($xpath, $object)) {
 			throw new OMVException(OMVErrorMsg::E_CONFIG_SET_OBJECT_FAILED);
 		}

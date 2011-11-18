@@ -409,7 +409,9 @@ OMV.NavigationPanelMgr.registerPanel("services", "transmissionbt", {
  */
 OMV.Module.Services.TransmissionBTBandwidthPanel = function(config) {
 	var initialConfig = {
-		rpcService: "TransmissionBT"
+		rpcService: "TransmissionBT",
+		rpcGetMethod: "getBandwidth",
+		rpcSetMethod: "setBandwidth"
 	};
 	Ext.apply(initialConfig, config);
 	OMV.Module.Services.TransmissionBTBandwidthPanel.superclass.constructor.call(
@@ -480,7 +482,7 @@ Ext.extend(OMV.Module.Services.TransmissionBTBandwidthPanel, OMV.FormPanelExt, {
 			},{
 				xtype: "numberfield",
 				name: "alt-speed-down",
-				fieldLabel: "Upload",
+				fieldLabel: "Download",
 				allowBlank: false,
 				value: 50
 			}]
