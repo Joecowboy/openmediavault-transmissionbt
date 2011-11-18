@@ -28,13 +28,12 @@ require_once("openmediavault/notify.inc");
 class TransmissionBTRpc extends OMVRpc {
 	public function __construct() {
 		$this->methodSchemata = array(
-			"set" => array('{
+			"setSettings" => array('{
 				"type":"object",
 				"properties":{
 					"enable":{"type":"boolean"},
 					"peerport":{"type":"integer","minimum":0,"maximum":65535},
-					"sharedfolderref":{'.
-					  $GLOBALS['OMV_JSONSCHEMA_UUID_NONE'].'},
+					"sharedfolderref":{'.$GLOBALS['OMV_JSONSCHEMA_UUID_NONE'].'},
 					"portforwardingenabled":{"type":"boolean"},
 					"pexenabled":{"type":"boolean"},
 					"dhtenabled":{"type":"boolean"},
@@ -46,9 +45,23 @@ class TransmissionBTRpc extends OMVRpc {
 					"rpcpassword":{"type":"string"},
 					"blocklistenabled":{"type":"boolean"},
 					"blocklistsyncenabled":{"type":"boolean"},
-					"blocklistsyncfrequency":{"type":"string","enum":'.
-					  '["hourly","daily","weekly","monthly"]},
+					"blocklistsyncfrequency":{"type":"string","enum":'.'["hourly","daily","weekly","monthly"]},
 					"blocklisturl":{"type":"string"}
+				}
+			}'),
+			"setLocationsAndFiles" => array('{
+				"type":"object",
+				"properties":{
+					"download-dir":{"type":"string"},
+					"incomplete-dir":{"type":"string"},
+					"incomplete-dir-enabled":{"type":"boolean"},
+					"watch-dir":{"type":"string"},
+					"watch-dir-enabled":{"type":"boolean"},
+					
+					"preallocation":{"type":"integer","enum":[0,1,2]},
+					"rename-partial-files":{"type":"boolean"},
+					"start-added-torrents":{"type":"boolean"},
+					"trash-original-torrent-files":{"type":"boolean"}
 				}
 			}')
 		);
@@ -57,7 +70,7 @@ class TransmissionBTRpc extends OMVRpc {
 	/**
 	 * Get configuration object.
 	 */
-	function get() {
+	function getSettings() {
 		global $xmlConfig;
 		// Check permissions
 		$this->validateSession();
@@ -75,25 +88,113 @@ class TransmissionBTRpc extends OMVRpc {
 		// Modify result data
 		$object['enable'] = boolval($object['enable']);
 		$object['peerport'] = intval($object['peerport']);
-		$object['portforwardingenabled'] = boolval(
-		  $object['portforwardingenabled']);
+		$object['portforwardingenabled'] = boolval($object['portforwardingenabled']);
 		$object['pexenabled'] = boolval($object['pexenabled']);
 		$object['dhtenabled'] = boolval($object['dhtenabled']);
 		$object['encryption'] = intval($object['encryption']);
 		$object['rpcenabled'] = boolval($object['rpcenabled']);
 		$object['rpcport'] = intval($object['rpcport']);
-		$object['rpcauthenticationrequired'] = boolval(
-		  $object['rpcauthenticationrequired']);
+		$object['rpcauthenticationrequired'] = boolval($object['rpcauthenticationrequired']);
 		$object['blocklistenabled'] = boolval($object['blocklistenabled']);
-		$object['blocklistsyncenabled'] = boolval(
-		  $object['blocklistsyncenabled']);
+		$object['blocklistsyncenabled'] = boolval($object['blocklistsyncenabled']);
 		return $object;
 	}
 
 	/**
 	 * Set configuration object.
 	 */
-	function set($data) {
+	function setSettings($data) {
+//		$this->debug(var_export(func_get_args(), TRUE));
+		global $xmlConfig;
+		// Check permissions
+		$this->validateSession();
+		if (!$this->hasRole(OMV_ROLE_ADMINISTRATOR)) {
+			throw new OMVException(OMVErrorMsg::E_RPC_SERVICE_INVALID_PERMISSION);
+		}
+		$this->commitSession();
+		// Validate method parameters
+		$this->validateParams(__METHOD__, func_get_args());
+		
+		// Get existing configuration object
+		$xpath = "//services/transmissionbt";
+		$oldObject = $xmlConfig->get($xpath);
+		if (is_null($oldObject)) {
+			throw new OMVException(OMVErrorMsg::E_CONFIG_GET_OBJECT_FAILED,
+			  $xpath);
+		}
+		
+		// Prepare configuration data
+		$object = array(
+			"enable" => array_boolval($data, 'enable'),
+			"peerport" => $data['peerport'],
+			"sharedfolderref" => $data['sharedfolderref'],
+			"portforwardingenabled" => array_boolval($data,'portforwardingenabled'),
+			"pexenabled" => array_boolval($data, 'pexenabled'),
+			"dhtenabled" => array_boolval($data, 'dhtenabled'),
+			"encryption" => $data['encryption'],
+			"rpcenabled" => array_boolval($data, 'rpcenabled'),
+			"rpcport" => $data['rpcport'],
+			"rpcauthenticationrequired" => array_boolval($data,'rpcauthenticationrequired'),
+			"rpcusername" => $data['rpcusername'],
+			"rpcpassword" => $data['rpcpassword'],
+			"blocklistenabled" => array_boolval($data, 'blocklistenabled'),
+			"blocklistsyncenabled" => array_boolval($data,'blocklistsyncenabled'),
+			"blocklistsyncfrequency" => $data['blocklistsyncfrequency'],
+			"blocklisturl" => $data['blocklisturl'],
+			"modules" => isset($oldObject['modules']) ?
+			  $oldObject['modules'] : array()
+		);
+		// Set configuration object		
+		if (FALSE === $xmlConfig->replace($xpath, $object)) {
+			throw new OMVException(OMVErrorMsg::E_CONFIG_SET_OBJECT_FAILED);
+		}
+		// Save configuration
+		if (FALSE === $xmlConfig->save()) {
+			throw new OMVException(OMVErrorMsg::E_CONFIG_SAVE_FAILED,
+			  $xmlConfig->getError());
+		}
+		// Notify configuration changes
+		$dispatcher = &OMVNotifyDispatcher::getInstance();
+		$dispatcher->notify(OMV_NOTIFY_MODIFY,
+		  "org.openmediavault.services.transmissionbt", $object);
+	}
+	
+	/**
+	 * Get configuration object.
+	 */
+	function getLocationsAndFiles() {
+		global $xmlConfig;
+		// Check permissions
+		$this->validateSession();
+		if (!$this->hasRole(OMV_ROLE_ADMINISTRATOR)) {
+			throw new OMVException(OMVErrorMsg::E_RPC_SERVICE_INVALID_PERMISSION);
+		}
+		$this->commitSession();
+		// Get configuration object
+		$xpath = "//services/transmissionbt/modules/locationsandfiles";
+		$object = $xmlConfig->get($xpath);
+		if (is_null($object)) {
+			throw new OMVException(OMVErrorMsg::E_CONFIG_GET_OBJECT_FAILED,
+			  $xpath);
+		}
+		// Modify result data
+		// Locations
+		$object['incomplete-dir-enabled'] = boolval($object['incomplete-dir-enabled']);
+		$object['watch-dir-enabled'] = boolval($object['watch-dir-enabled']);
+		
+		// Files
+		$object['preallocation'] = intval($object['preallocation']);
+		$object['rename-partial-files'] = boolval($object['rename-partial-files']);
+		$object['start-added-torrents'] = boolval($object['start-added-torrents']);
+		$object['trash-original-torrent-files'] = boolval($object['trash-original-torrent-files']);
+		
+		return $object;
+	}
+
+	/**
+	 * Set configuration object.
+	 */
+	function setLocationsAndFiles($data) {
 //		$this->debug(var_export(func_get_args(), TRUE));
 		global $xmlConfig;
 		// Check permissions
@@ -106,28 +207,21 @@ class TransmissionBTRpc extends OMVRpc {
 		$this->validateParams(__METHOD__, func_get_args());
 		// Prepare configuration data
 		$object = array(
-			"enable" => array_boolval($data, 'enable'),
-			"peerport" => $data['peerport'],
-			"sharedfolderref" => $data['sharedfolderref'],
-			"portforwardingenabled" => array_boolval($data,
-			  'portforwardingenabled'),
-			"pexenabled" => array_boolval($data, 'pexenabled'),
-			"dhtenabled" => array_boolval($data, 'dhtenabled'),
-			"encryption" => $data['encryption'],
-			"rpcenabled" => array_boolval($data, 'rpcenabled'),
-			"rpcport" => $data['rpcport'],
-			"rpcauthenticationrequired" => array_boolval($data,
-			  'rpcauthenticationrequired'),
-			"rpcusername" => $data['rpcusername'],
-			"rpcpassword" => $data['rpcpassword'],
-			"blocklistenabled" => array_boolval($data, 'blocklistenabled'),
-			"blocklistsyncenabled" => array_boolval($data,
-			  'blocklistsyncenabled'),
-			"blocklistsyncfrequency" => $data['blocklistsyncfrequency'],
-			"blocklisturl" => $data['blocklisturl']
+			// Locations
+			"download-dir" => $data['download-dir'],
+			"incomplete-dir" => $data['incomplete-dir'],
+			"incomplete-dir-enabled" => $data['incomplete-dir-enabled'],
+			"watch-dir" => $data['watch-dir'],
+			"watch-dir-enabled" => $data['watch-dir-enabled'],
+			
+			// Files
+			"preallocation" => $data['preallocation'],
+			"rename-partial-files" => array_boolval($data, 'rename-partial-files'),
+			"start-added-torrents" => array_boolval($data, 'start-added-torrents'),
+			"trash-original-torrent-files" => array_boolval($data, 'trash-original-torrent-files'),
 		);
 		// Set configuration object
-		$xpath = "//services/transmissionbt";
+		$xpath = "//services/transmissionbt/modules/locationsandfiles";
 		if (FALSE === $xmlConfig->replace($xpath, $object)) {
 			throw new OMVException(OMVErrorMsg::E_CONFIG_SET_OBJECT_FAILED);
 		}

@@ -33,21 +33,21 @@ OMV.NavigationPanelMgr.registerMenu("services", "transmissionbt", {
 	icon: "images/transmissionbt.png"
 });
 
-OMV.Module.Services.TransmissionBT = function(config) {
+/**
+ * @class OMV.Module.Services.TransmissionBTSettingsPanel
+ * @derived OMV.FormPanelExt
+ */
+OMV.Module.Services.TransmissionBTSettingsPanel = function(config) {
 	var initialConfig = {
-		rpcService: "TransmissionBT"
+		rpcService: "TransmissionBT",
+		rpcGetMethod: "getSettings",
+		rpcSetMethod: "setSettings"
 	};
 	Ext.apply(initialConfig, config);
-	OMV.Module.Services.TransmissionBT.superclass.constructor.call(this,
-	  initialConfig);
+	OMV.Module.Services.TransmissionBTSettingsPanel.superclass.constructor.call(
+	  this, initialConfig);
 };
-Ext.extend(OMV.Module.Services.TransmissionBT, OMV.FormPanelExt, {
-	initComponent : function() {
-		OMV.Module.Services.TransmissionBT.superclass.initComponent.apply(
-		  this, arguments);
-		this.on("load", this._updateFormFields, this);
-	},
-
+Ext.extend(OMV.Module.Services.TransmissionBTSettingsPanel, OMV.FormPanelExt, {
 	getFormItems : function() {
 		return [{
 			xtype: "fieldset",
@@ -243,7 +243,6 @@ Ext.extend(OMV.Module.Services.TransmissionBT, OMV.FormPanelExt, {
 			}]
 		}];
 	},
-
 	/**
 	 * Private function to update the states of various form fields.
 	 */
@@ -280,5 +279,299 @@ Ext.extend(OMV.Module.Services.TransmissionBT, OMV.FormPanelExt, {
 	}
 });
 OMV.NavigationPanelMgr.registerPanel("services", "transmissionbt", {
-	cls: OMV.Module.Services.TransmissionBT
+	cls: OMV.Module.Services.TransmissionBTSettingsPanel,
+	title: "Settings",
+	position: 10
+});
+
+/**
+ * @class OMV.Module.Services.TransmissionBTFilesAndLocationsPanel
+ * @derived OMV.FormPanelExt
+ */
+OMV.Module.Services.TransmissionBTFilesAndLocationsPanel = function(config) {
+	var initialConfig = {
+		rpcService: "TransmissionBT",
+		rpcGetMethod: "getLocationsAndFiles",
+		rpcSetMethod: "setLocationsAndFiles"
+	};
+	Ext.apply(initialConfig, config);
+	OMV.Module.Services.TransmissionBTFilesAndLocationsPanel.superclass.constructor.call(
+	  this, initialConfig);
+};
+Ext.extend(OMV.Module.Services.TransmissionBTFilesAndLocationsPanel, OMV.FormPanelExt, {
+	getFormItems : function() {
+		return [{
+			xtype: "fieldset",
+			title: "Locations",
+			defaults: {
+//				anchor: "100%",
+				labelSeparator: ""
+			},
+			items: [{
+				xtype: "textfield",
+				name: "download-dir",
+				fieldLabel: "Download",
+				allowBlank: true,
+				plugins: [ OMV.form.plugins.FieldInfo ],
+				infoText: "Directory to keep downloads. If Incomplete is enabled, only complete Downloads will be stored here."			
+			},{
+				xtype: "textfield",
+				name: "incomplete-dir",
+				fieldLabel: "Incomplete",
+				allowBlank: false,
+				plugins: [ OMV.form.plugins.FieldInfo ],
+				infoText: "Directory to keep files in until torrent is complete."
+			},{
+				xtype: "checkbox",
+				name: "incomplete-dir-enabled",
+				fieldLabel: "Enable",
+				checked: false,
+				inputValue: 1,
+				boxLabel: "Enable incomplete directory."
+			},{
+				xtype: "textfield",
+				name: "watch-dir",
+				fieldLabel: "Watch",
+				allowBlank: false,
+				plugins: [ OMV.form.plugins.FieldInfo ],
+				infoText: "Watch a directory for torrent files and add them to transmission"
+			},{
+				xtype: "checkbox",
+				name: "watch-dir-enabled",
+				fieldLabel: "Enable",
+				checked: false,
+				inputValue: 1,
+				boxLabel: "Enable Watch directory."
+			}]
+		},{
+			xtype: "fieldset",
+			title: "Files",
+			defaults: {
+//				anchor: "100%",
+				labelSeparator: ""
+			},
+			items: [{
+				xtype: "combo",
+				name: "preallocation",
+				hiddenName: "preallocation",
+				fieldLabel: "Preallocation",
+				mode: "local",
+				store: new Ext.data.SimpleStore({
+					fields: [ "value","text" ],
+					data: [
+						[ 0,"Off" ],
+						[ 1,"Fast" ],
+						[ 2,"Full" ]
+					]
+				}),
+				displayField: "text",
+				valueField: "value",
+				allowBlank: false,
+				editable: false,
+				triggerAction: "all",
+				value: 1,
+				plugins: [ OMV.form.plugins.FieldInfo ],
+				infoText: "Preallocate Files."
+			},{
+				xtype: "checkbox",
+				name: "rename-partial-files",
+				fieldLabel: "Postfix",
+				checked: true,
+				inputValue: 1,
+				boxLabel: "Postfix partially downloaded files with .part."
+			},{
+				xtype: "checkbox",
+				name: "start-added-torrents",
+				fieldLabel: "Start Torrents",
+				checked: true,
+				inputValue: 1,
+				boxLabel: "Start torrents as soon as they are added."
+			},{
+				xtype: "checkbox",
+				name: "trash-original-torrent-files",
+				fieldLabel: "Trash original",
+				checked: false,
+				inputValue: 1,
+				boxLabel: "Delete torrents added from the watch directory."
+			}]
+		}];
+	}
+});
+OMV.NavigationPanelMgr.registerPanel("services", "transmissionbt", {
+	cls: OMV.Module.Services.TransmissionBTFilesAndLocationsPanel,
+	title: "Files and Locations",
+	position: 20
+});
+
+/**
+ * @class OMV.Module.Services.TransmissionBTBandwidthPanel
+ * @derived OMV.FormPanelExt
+ */
+OMV.Module.Services.TransmissionBTBandwidthPanel = function(config) {
+	var initialConfig = {
+		rpcService: "TransmissionBT"
+	};
+	Ext.apply(initialConfig, config);
+	OMV.Module.Services.TransmissionBTBandwidthPanel.superclass.constructor.call(
+	  this, initialConfig);
+};
+Ext.extend(OMV.Module.Services.TransmissionBTBandwidthPanel, OMV.FormPanelExt, {
+	getFormItems : function() {
+		return [{
+			xtype: "fieldset",
+			title: "Speed",
+			defaults: {
+//				anchor: "100%",
+				labelSeparator: ""
+			},
+			items: [{
+				xtype: "numberfield",
+				name: "speed-limit-down",
+				fieldLabel: "Download",
+				allowBlank: false,
+				value: 100
+			},{
+				xtype: "checkbox",
+				name: "speed-limit-down-enabled",
+				fieldLabel: "Limit Download",
+				checked: false,
+				inputValue: 1,
+				boxLabel: "Enable download limit."
+			},{
+				xtype: "numberfield",
+				name: "speed-limit-up",
+				fieldLabel: "Upload",
+				allowBlank: false,
+				value: 100
+			},{
+				xtype: "checkbox",
+				name: "speed-limit-up-enabled",
+				fieldLabel: "Limit Upload",
+				checked: false,
+				inputValue: 1,
+				boxLabel: "Enable upload limit."
+			},{
+				xtype: "numberfield",
+				name: "upload-slots-per-torrent",
+				fieldLabel: "Upload slots",
+				allowBlank: false,
+				value: 14
+			}]
+		},{
+			xtype: "fieldset",
+			title: "Turtle Mode",
+			defaults: {
+//				anchor: "100%",
+				labelSeparator: ""
+			},
+			items: [{
+				xtype: "checkbox",
+				name: "alt-speed-enabled",
+				fieldLabel: "Enable",
+				checked: false,
+				inputValue: 1,
+				boxLabel: "Enable Turtle Mode."
+			},{
+				xtype: "numberfield",
+				name: "alt-speed-up",
+				fieldLabel: "Upload",
+				allowBlank: false,
+				value: 50
+			},{
+				xtype: "numberfield",
+				name: "alt-speed-down",
+				fieldLabel: "Upload",
+				allowBlank: false,
+				value: 50
+			}]
+		}];
+	}
+});
+OMV.NavigationPanelMgr.registerPanel("services", "transmissionbt", {
+	cls: OMV.Module.Services.TransmissionBTBandwidthPanel,
+	title: "Bandwidth",
+	position: 30
+});
+
+/**
+ * @class OMV.Module.Services.TransmissionBTQueuingPanel
+ * @derived OMV.FormPanelExt
+ */
+OMV.Module.Services.TransmissionBTQueuingPanel = function(config) {
+	var initialConfig = {
+		rpcService: "TransmissionBT"
+	};
+	Ext.apply(initialConfig, config);
+	OMV.Module.Services.TransmissionBTQueuingPanel.superclass.constructor.call(
+	  this, initialConfig);
+};
+Ext.extend(OMV.Module.Services.TransmissionBTQueuingPanel, OMV.FormPanelExt, {
+	getFormItems : function() {
+		return [{
+			xtype: "fieldset",
+			title: "General",
+			defaults: {
+//				anchor: "100%",
+				labelSeparator: ""
+			},
+			items: [{xtype: "checkbox",
+				name: "queue-stalled-enabled",
+				fieldLabel: "Queue Stalled",
+				checked: true,
+				inputValue: 1,
+				boxLabel: "Torrents that have not shared data for queue-stalled-minutes are treated as 'stalled' and are not counted against the queue-download-size and seed-queue-size limits."
+			},{
+				xtype: "numberfield",
+				name: "queue-stalled-minutes",
+				fieldLabel: "Stalled Minutes",
+				allowBlank: false,
+				value: 30
+			}]
+		},{
+			xtype: "fieldset",
+			title: "Download Queue",
+			defaults: {
+//				anchor: "100%",
+				labelSeparator: ""
+			},
+			items: [{xtype: "checkbox",
+				name: "download-queue-enabled",
+				fieldLabel: "Download",
+				checked: true,
+				inputValue: 1,
+				boxLabel: "Transmission will only download download-queue-size non-stalled torrents at once."
+			},{
+				xtype: "numberfield",
+				name: "download-queue-size",
+				fieldLabel: "Size",
+				allowBlank: false,
+				value: 5
+			}]
+		},{
+			xtype: "fieldset",
+			title: "Seed Queue",
+			defaults: {
+//				anchor: "100%",
+				labelSeparator: ""
+			},
+			items: [{xtype: "checkbox",
+				name: "seed-queue-enabled",
+				fieldLabel: "Seed",
+				checked: false,
+				inputValue: 1,
+				boxLabel: "Transmission will only seed seed-queue-size non-stalled torrents at once."
+			},{
+				xtype: "numberfield",
+				name: "seed-queue-size",
+				fieldLabel: "Size",
+				allowBlank: false,
+				value: 10
+			}]
+		}];
+	}
+});
+OMV.NavigationPanelMgr.registerPanel("services", "transmissionbt", {
+	cls: OMV.Module.Services.TransmissionBTQueuingPanel,
+	title: "Queuing",
+	position: 40
 });
