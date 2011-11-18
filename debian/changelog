@@ -1,8 +1,8 @@
 openmediavault-transmissionbt (0.2.5) stable; urgency=low
 
-  * Github Issue #1 - Added Peer
-  * Github Issue #4
-  * Github Issue #8 Config is reloaded without transmissionbt restart
+  * Github Issue #1 - Add Peers Section
+  * Github Issue #4 - Reload Config without restarting transmission
+  * Github Issue #7 - Switching checkbox/textbox in "Files & Location" and "Bandwidth" tab
 
  -- Marcel Beck <marcel.beck@mbeck.org>  Fri, 18 Nov 2011 21:58:26 +0100
 
