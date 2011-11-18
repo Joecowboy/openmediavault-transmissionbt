@@ -73,8 +73,8 @@ class TransmissionBTModule extends OMVModuleAbstract implements
 		// Currently transmission overwrites the settings.json configuration
 		// file on exit. This means transmission must be terminated before
 		// writing the new settings.json file.
-		$initd = new OMVSysVInitScript("transmission-daemon", boolval($object['enable']));
-		$initd->stop();
+		//$initd = new OMVSysVInitScript("transmission-daemon", boolval($object['enable']));
+		//$initd->stop();
 		// Create '/etc/transmission-daemon/settings.json' file
 		$cmd = "sudo omv-mkconf transmissionbt 2>&1";
 		OMVUtil::exec($cmd, $output, $result);
@@ -83,7 +83,13 @@ class TransmissionBTModule extends OMVModuleAbstract implements
 			  $cmd, implode("\n", $output));
 		}
 		// Update service
-		$initd->exec();
+		$cmd = "sudo pkill -HUP transmission-da";
+		OMVUtil::exec($cmd, $output, $result);
+		if ($result !== 0) {
+			throw new OMVException(OMVErrorMsg::E_EXEC_FAILED,
+			  $cmd, 'Result: '.$result. implode("\n", $output));
+		}
+		//$initd->exec();
 	}
 
 	/**
