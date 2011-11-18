@@ -68,19 +68,6 @@ Ext.extend(OMV.Module.Services.TransmissionBTSettingsPanel, OMV.FormPanelExt, {
 					scope: this
 				}
 			},{
-				xtype: "numberfield",
-				name: "peerport",
-				fieldLabel: "Peer port",
-				vtype: "port",
-				minValue: 0,
-				maxValue: 65535,
-				allowDecimals: false,
-				allowNegative: false,
-				allowBlank: false,
-				value: 51413,
-				plugins: [ OMV.form.plugins.FieldInfo ],
-				infoText: "Port to listen for incoming peer connections."
-			},{
 				xtype: "sharedfoldercombo",
 				name: "sharedfolderref",
 				hiddenName: "sharedfolderref",
@@ -88,13 +75,6 @@ Ext.extend(OMV.Module.Services.TransmissionBTSettingsPanel, OMV.FormPanelExt, {
 				allowNone: true,
 				plugins: [ OMV.form.plugins.FieldInfo ],
 				infoText: "Make sure the group 'debian-transmission' has read/write access to the shared folder."
-			},{
-				xtype: "checkbox",
-				name: "portforwardingenabled",
-				fieldLabel: "Port forwarding",
-				checked: false,
-				inputValue: 1,
-				boxLabel: "Enable port forwarding via NAT-PMP or UPnP."
 			},{
 				xtype: "checkbox",
 				name: "pexenabled",
@@ -286,6 +266,159 @@ OMV.NavigationPanelMgr.registerPanel("services", "transmissionbt", {
 });
 
 /**
+ * @class OMV.Module.Services.TransmissionBTPeerPanel
+ * @derived OMV.FormPanelExt
+ */
+OMV.Module.Services.TransmissionBTPeerPanel = function(config) {
+	var initialConfig = {
+		rpcService: "TransmissionBT",
+		rpcGetMethod: "getPeer",
+		rpcSetMethod: "setPeer"
+	};
+	Ext.apply(initialConfig, config);
+	OMV.Module.Services.TransmissionBTPeerPanel.superclass.constructor.call(
+	  this, initialConfig);
+};
+Ext.extend(OMV.Module.Services.TransmissionBTPeerPanel, OMV.FormPanelExt, {
+	getFormItems : function() {
+		return [{
+			xtype: "fieldset",
+			title: "Peers",
+			defaults: {
+				labelSeparator: ""
+			},
+			items: [{
+				xtype: "fieldset",
+				title: "Bindings",
+				defaults: {
+					labelSeparator: ""
+				},
+				items: [{
+					xtype: "textfield",
+					name: "bind-address-ipv4",
+					fieldLabel: "IPv4",
+					allowBlank: false,
+					value: "0.0.0.0"
+				},{
+					xtype: "textfield",
+					name: "bind-address-ipv6",
+					fieldLabel: "IPv6",
+					allowBlank: false,
+					value: "::"
+				}]
+			},{
+				xtype: "fieldset",
+				title: "Limits",
+				defaults: {
+					labelSeparator: ""
+				},
+				items: [{
+					xtype: "numberfield",
+					name: "peer-limit-global",
+					fieldLabel: "Global",
+					allowDecimals: false,
+					allowNegative: false,
+					allowBlank: false,
+					value: 240
+				},{
+					xtype: "numberfield",
+					name: "peer-limit-per-torrent",
+					fieldLabel: "Per torrent",
+					allowDecimals: false,
+					allowNegative: false,
+					allowBlank: false,
+					value: 60
+				},{
+					xtype: "combo",
+					name: "peer-socket-tos",
+					hiddenName: "peer-socket-tos",
+					fieldLabel: "Socket TOS",
+					mode: "local",
+					store: new Ext.data.SimpleStore({
+						fields: [ "value","text" ],
+						data: [
+							[ "default","default" ],
+							[ "lowcost","lowcost" ],
+							[ "throughput","throughput" ],
+							[ "lowdelay","lowdelay" ],
+							[ "reliability","reliability" ]
+						]
+					}),
+					displayField: "text",
+					valueField: "value",
+					allowBlank: false,
+					editable: false,
+					triggerAction: "all",
+					value: "default"
+				}]
+			}]
+		},{
+			xtype: "fieldset",
+			title: "Peer Ports",
+			defaults: {
+				labelSeparator: ""
+			},
+			items: [{
+				xtype: "numberfield",
+				name: "peer-port",
+				fieldLabel: "Peer port",
+				vtype: "port",
+				minValue: 1024,
+				maxValue: 65535,
+				allowDecimals: false,
+				allowNegative: false,
+				allowBlank: false,
+				value: 51413,
+				plugins: [ OMV.form.plugins.FieldInfo ],
+				infoText: "Port to listen for incoming peer connections."
+			},{
+				xtype: "numberfield",
+				name: "peer-port-random-high",
+				fieldLabel: "Random high",
+				vtype: "port",
+				minValue: 1024,
+				maxValue: 65535,
+				allowDecimals: false,
+				allowNegative: false,
+				allowBlank: false,
+				value: 65535,
+			},{
+				xtype: "numberfield",
+				name: "peer-port-random-low",
+				fieldLabel: "Random low",
+				allowBlank: false,
+				vtype: "port",
+				minValue: 1024,
+				maxValue: 65535,
+				allowDecimals: false,
+				allowNegative: false,
+				allowBlank: false,
+				value: 1024,
+			},{
+				xtype: "checkbox",
+				name: "peer-port-random-on-start",
+				fieldLabel: "Random Port",
+				checked: false,
+				inputValue: 1,
+				boxLabel: "Random Port on start."
+			},{
+				xtype: "checkbox",
+				name: "port-forwarding-enabled",
+				fieldLabel: "Port forwarding",
+				checked: true,
+				inputValue: 1,
+				boxLabel: "Enable port forwarding via NAT-PMP or UPnP."
+			}]
+		}];
+	}
+});
+OMV.NavigationPanelMgr.registerPanel("services", "transmissionbt", {
+	cls: OMV.Module.Services.TransmissionBTPeerPanel,
+	title: "Peer",
+	position: 20
+});
+
+/**
  * @class OMV.Module.Services.TransmissionBTFilesAndLocationsPanel
  * @derived OMV.FormPanelExt
  */
@@ -316,13 +449,6 @@ Ext.extend(OMV.Module.Services.TransmissionBTFilesAndLocationsPanel, OMV.FormPan
 				plugins: [ OMV.form.plugins.FieldInfo ],
 				infoText: "Directory to keep downloads. If incomplete is enabled, only complete downloads will be stored here."
 			},{
-				xtype: "textfield",
-				name: "incomplete-dir",
-				fieldLabel: "Incomplete directory",
-				allowBlank: false,
-				plugins: [ OMV.form.plugins.FieldInfo ],
-				infoText: "Directory to keep files in until torrent is complete."
-			},{
 				xtype: "checkbox",
 				name: "incomplete-dir-enabled",
 				fieldLabel: "Incomplete",
@@ -331,11 +457,11 @@ Ext.extend(OMV.Module.Services.TransmissionBTFilesAndLocationsPanel, OMV.FormPan
 				boxLabel: "Enable incomplete directory."
 			},{
 				xtype: "textfield",
-				name: "watch-dir",
-				fieldLabel: "Watch directory",
+				name: "incomplete-dir",
+				fieldLabel: "Incomplete directory",
 				allowBlank: false,
 				plugins: [ OMV.form.plugins.FieldInfo ],
-				infoText: "Watch a directory for torrent files and add them to transmission"
+				infoText: "Directory to keep files in until torrent is complete."
 			},{
 				xtype: "checkbox",
 				name: "watch-dir-enabled",
@@ -343,6 +469,13 @@ Ext.extend(OMV.Module.Services.TransmissionBTFilesAndLocationsPanel, OMV.FormPan
 				checked: false,
 				inputValue: 1,
 				boxLabel: "Enable Watch directory."
+			},{
+				xtype: "textfield",
+				name: "watch-dir",
+				fieldLabel: "Watch directory",
+				allowBlank: false,
+				plugins: [ OMV.form.plugins.FieldInfo ],
+				infoText: "Watch a directory for torrent files and add them to transmission"
 			}]
 		},{
 			xtype: "fieldset",
@@ -401,7 +534,7 @@ Ext.extend(OMV.Module.Services.TransmissionBTFilesAndLocationsPanel, OMV.FormPan
 OMV.NavigationPanelMgr.registerPanel("services", "transmissionbt", {
 	cls: OMV.Module.Services.TransmissionBTFilesAndLocationsPanel,
 	title: "Files and Locations",
-	position: 20
+	position: 30
 });
 
 /**
@@ -428,6 +561,13 @@ Ext.extend(OMV.Module.Services.TransmissionBTBandwidthPanel, OMV.FormPanelExt, {
 				labelSeparator: ""
 			},
 			items: [{
+				xtype: "checkbox",
+				name: "speed-limit-down-enabled",
+				fieldLabel: "Limit Download",
+				checked: false,
+				inputValue: 1,
+				boxLabel: "Enable download limit."
+			},{
 				xtype: "numberfield",
 				name: "speed-limit-down",
 				fieldLabel: "Download",
@@ -437,11 +577,11 @@ Ext.extend(OMV.Module.Services.TransmissionBTBandwidthPanel, OMV.FormPanelExt, {
 				infoText: "Limit download speed. Value is kb/s."
 			},{
 				xtype: "checkbox",
-				name: "speed-limit-down-enabled",
-				fieldLabel: "Limit Download",
+				name: "speed-limit-up-enabled",
+				fieldLabel: "Limit Upload",
 				checked: false,
 				inputValue: 1,
-				boxLabel: "Enable download limit."
+				boxLabel: "Enable upload limit."
 			},{
 				xtype: "numberfield",
 				name: "speed-limit-up",
@@ -450,13 +590,6 @@ Ext.extend(OMV.Module.Services.TransmissionBTBandwidthPanel, OMV.FormPanelExt, {
 				value: 100,
 				plugins: [ OMV.form.plugins.FieldInfo ],
 				infoText: "Limit upload speed. Value is kb/s."
-			},{
-				xtype: "checkbox",
-				name: "speed-limit-up-enabled",
-				fieldLabel: "Limit Upload",
-				checked: false,
-				inputValue: 1,
-				boxLabel: "Enable upload limit."
 			},{
 				xtype: "numberfield",
 				name: "upload-slots-per-torrent",
@@ -501,7 +634,7 @@ Ext.extend(OMV.Module.Services.TransmissionBTBandwidthPanel, OMV.FormPanelExt, {
 OMV.NavigationPanelMgr.registerPanel("services", "transmissionbt", {
 	cls: OMV.Module.Services.TransmissionBTBandwidthPanel,
 	title: "Bandwidth",
-	position: 30
+	position: 40
 });
 
 /**
@@ -586,5 +719,5 @@ Ext.extend(OMV.Module.Services.TransmissionBTQueuingPanel, OMV.FormPanelExt, {
 OMV.NavigationPanelMgr.registerPanel("services", "transmissionbt", {
 	cls: OMV.Module.Services.TransmissionBTQueuingPanel,
 	title: "Queuing",
-	position: 40
+	position: 50
 });

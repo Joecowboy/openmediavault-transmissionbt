@@ -93,12 +93,14 @@ case "$1" in
 		fi
 		
 		if ! omv_config_exists "//services/transmissionbt/modules"; then
-			echo "Updateing configuration"
+			echo "Updateing Configuration"
+			echo "# Add modules section"
 			omv_config_add_element "//services/transmissionbt" "modules" "" true
 		fi
 		
 		if ! omv_config_exists "//services/transmissionbt/modules/locationsandfiles"; then
-			echo "Updating configuration"
+			echo "Updateing Configuration"
+			echo "# Add modules/locationsandfiles section"
 			object="<download-dir></download-dir>"
 			object="${object}<incomplete-dir>incomplete</incomplete-dir>"
 			object="${object}<incomplete-dir-enabled>0</incomplete-dir-enabled>"
@@ -112,7 +114,8 @@ case "$1" in
 		fi
 		
 		if ! omv_config_exists "//services/transmissionbt/modules/bandwidth"; then
-			echo "Updating configuration"
+			echo "Updateing Configuration"
+			echo "# Add modules/bandwidth section"
 			object="<speed-limit-down>100</speed-limit-down>"
 			object="${object}<speed-limit-down-enabled>0</speed-limit-down-enabled>"
 			object="${object}<speed-limit-up>100</speed-limit-up>"
@@ -125,7 +128,8 @@ case "$1" in
 		fi
 		
 		if ! omv_config_exists "//services/transmissionbt/modules/queuing"; then
-			echo "Updating configuration"
+			echo "Updateing Configuration"
+			echo "# Add modules/queuing section"
 			object="<queue-stalled-enabled>1</queue-stalled-enabled>"
 			object="${object}<queue-stalled-minutes>30</queue-stalled-minutes>"
 			object="${object}<download-queue-enabled>1</download-queue-enabled>"
@@ -134,6 +138,43 @@ case "$1" in
 			object="${object}<seed-queue-size>10</seed-queue-size>"
 			omv_config_add_element "//services/transmissionbt/modules" "queuing" "${object}" true
 		fi
+		
+		if ! omv_config_exists "//services/transmissionbt/modules/peer"; then
+			echo "Updating configuration"
+			echo "# Add modules/peer section"
+			object="<bind-address-ipv4>0.0.0.0</bind-address-ipv4>"
+			object="${object}<bind-address-ipv6>::</bind-address-ipv6>"
+			object="${object}<peer-limit-global>240</peer-limit-global>"
+			object="${object}<peer-limit-per-torrent>60</peer-limit-per-torrent>"
+			object="${object}<peer-socket-tos>default</peer-socket-tos>"
+			
+			if omv_config_exists "//services/transmissionbt/peerport"; then
+				echo "# Get peerport from old section"
+				peerport=`omv_config_get "//services/transmissionbt/peerport"`
+				echo "# Remove peerport from old section"
+				omv_config_delete "//services/transmissionbt/peerport"
+				object="${object}<peer-port>${peerport}</peer-port>"
+			else
+				object="${object}<peer-port>51413</peer-port>"
+			fi
+			
+			object="${object}<peer-port-random-high>65535</peer-port-random-high>"
+			object="${object}<peer-port-random-low>1024</peer-port-random-low>"
+			object="${object}<peer-port-random-on-start>0</peer-port-random-on-start>"
+			
+			if omv_config_exists "//services/transmissionbt/portforwardingenabled"; then
+				echo "# Get portforwardingenabled from old section"
+				portforwardingenabled=`omv_config_get "//services/transmissionbt/portforwardingenabled"`
+				echo "# Remove portforwardingenabled from old section"
+				omv_config_delete "//services/transmissionbt/portforwardingenabled"
+				object="${object}<port-forwarding-enabled>${portforwardingenabled}</port-forwarding-enabled>"
+			else
+				object="${object}<port-forwarding-enabled>1</port-forwarding-enabled>"
+			fi
+			
+			omv_config_add_element "//services/transmissionbt/modules" "peer" "${object}" true
+		fi
+		
 
 		########################################################################
 		# Import system group 'debian-transmission' created by the

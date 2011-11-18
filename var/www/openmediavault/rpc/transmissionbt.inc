@@ -33,9 +33,7 @@ class TransmissionBTRpc extends OMVRpc {
 				"type":"object",
 				"properties":{
 					"enable":{"type":"boolean"},
-					"peerport":{"type":"integer","minimum":0,"maximum":65535},
 					"sharedfolderref":{'.$GLOBALS['OMV_JSONSCHEMA_UUID_NONE'].'},
-					"portforwardingenabled":{"type":"boolean"},
 					"pexenabled":{"type":"boolean"},
 					"dhtenabled":{"type":"boolean"},
 					"encryption":{"type":"integer","enum":[0,1,2]},
@@ -91,6 +89,22 @@ class TransmissionBTRpc extends OMVRpc {
 					"seed-queue-enabled":{"type":"boolean"},
 					"seed-queue-size":{"type":"integer"}
 				}
+			}'),
+			"setPeer" => array('{
+				"type":"object",
+				"properties":{
+					"bind-address-ipv4":{"type":"string"},
+					"bind-address-ipv6":{"type":"string"},
+					"peer-limit-global":{"type":"integer"},
+					"peer-limit-per-torrent":{"type":"integer"},
+					"peer-socket-tos":{"type":"string","enum":'.'["default","lowcost","throughput","lowdelay","reliability"]},
+					
+					"peer-port":{"type":"integer","minimum":1024,"maximum":65535},
+					"peer-port-random-high":{"type":"integer","minimum":1024,"maximum":65535},
+					"peer-port-random-low":{"type":"integer","minimum":1024,"maximum":65535},
+					"peer-port-random-on-start":{"type":"boolean"}
+					"port-forwarding-enabled":{"type":"boolean"}
+				}
 			}')
 		);
 	}
@@ -115,8 +129,6 @@ class TransmissionBTRpc extends OMVRpc {
 		}
 		// Modify result data
 		$object['enable'] = boolval($object['enable']);
-		$object['peerport'] = intval($object['peerport']);
-		$object['portforwardingenabled'] = boolval($object['portforwardingenabled']);
 		$object['pexenabled'] = boolval($object['pexenabled']);
 		$object['dhtenabled'] = boolval($object['dhtenabled']);
 		$object['encryption'] = intval($object['encryption']);
@@ -154,9 +166,7 @@ class TransmissionBTRpc extends OMVRpc {
 		// Prepare configuration data
 		$object = array(
 			"enable" => array_boolval($data, 'enable'),
-			"peerport" => $data['peerport'],
 			"sharedfolderref" => $data['sharedfolderref'],
-			"portforwardingenabled" => array_boolval($data,'portforwardingenabled'),
 			"pexenabled" => array_boolval($data, 'pexenabled'),
 			"dhtenabled" => array_boolval($data, 'dhtenabled'),
 			"encryption" => $data['encryption'],
@@ -398,6 +408,81 @@ class TransmissionBTRpc extends OMVRpc {
 		);
 		// Set configuration object
 		$xpath = "//services/transmissionbt/modules/queuing";
+		if (FALSE === $xmlConfig->replace($xpath, $object)) {
+			throw new OMVException(OMVErrorMsg::E_CONFIG_SET_OBJECT_FAILED);
+		}
+		// Save configuration
+		if (FALSE === $xmlConfig->save()) {
+			throw new OMVException(OMVErrorMsg::E_CONFIG_SAVE_FAILED,
+			  $xmlConfig->getError());
+		}
+		// Notify configuration changes
+		$dispatcher = &OMVNotifyDispatcher::getInstance();
+		$dispatcher->notify(OMV_NOTIFY_MODIFY,
+		  "org.openmediavault.services.transmissionbt", $object);
+	}
+	
+	/**
+	 * Get configuration object.
+	 */
+	function getPeer() {
+		global $xmlConfig;
+		// Check permissions
+		$this->validateSession();
+		if (!$this->hasRole(OMV_ROLE_ADMINISTRATOR)) {
+			throw new OMVException(OMVErrorMsg::E_RPC_SERVICE_INVALID_PERMISSION);
+		}
+		$this->commitSession();
+		// Get configuration object
+		$xpath = "//services/transmissionbt/modules/peer";
+		$object = $xmlConfig->get($xpath);
+		if (is_null($object)) {
+			throw new OMVException(OMVErrorMsg::E_CONFIG_GET_OBJECT_FAILED,
+			  $xpath);
+		}
+		// Modify result data
+		// Peer Ports
+		$object['peer-port-random-on-start'] = boolval($object['peer-port-random-on-start']);
+		$object['port-forwarding-enabled'] = boolval($object['port-forwarding-enabled']);
+		
+		return $object;
+	}
+
+	/**
+	 * Set configuration object.
+	 */
+	function setPeer($data) {
+//		$this->debug(var_export(func_get_args(), TRUE));
+		global $xmlConfig;
+		// Check permissions
+		$this->validateSession();
+		if (!$this->hasRole(OMV_ROLE_ADMINISTRATOR)) {
+			throw new OMVException(OMVErrorMsg::E_RPC_SERVICE_INVALID_PERMISSION);
+		}
+		$this->commitSession();
+		// Validate method parameters
+		$this->validateParams(__METHOD__, func_get_args());
+		// Prepare configuration data
+		$object = array(
+			// Peers
+			// Bindings
+			"bind-address-ipv4" => $data['bind-address-ipv4'],
+			"bind-address-ipv6" => $data['bind-address-ipv6'],
+			
+			// Limits
+			"peer-limit-global" => $data['peer-limit-global'],
+			"peer-limit-per-torrent" => $data['peer-limit-per-torrent'],
+			"peer-socket-tos" => $data['peer-socket-tos'],
+			
+			// Peer Ports
+			"peer-port" => $data['peer-port'],
+			"peer-port-random-high" => $data['peer-port-random-high'],
+			"peer-port-random-low" => $data['peer-port-random-low'],
+			"peer-port-random-on-start" => array_boolval($data, 'peer-port-random-on-start'),
+			"port-forwarding-enabled" => array_boolval($data, 'port-forwarding-enabled'),
+		);
+		// Set configuration object
+		$xpath = "//services/transmissionbt/modules/peer";
 		if (FALSE === $xmlConfig->replace($xpath, $object)) {
 			throw new OMVException(OMVErrorMsg::E_CONFIG_SET_OBJECT_FAILED);
 		}
