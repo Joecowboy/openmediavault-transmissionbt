@@ -24,6 +24,8 @@ binary-indep: install
 	
 	# Remove '.git' directories
 	find $(CURDIR)/debian/openmediavault-transmissionbt -name .git -type d -print0 -prune | xargs -0 rm -rf
+	
+	chmod +x $(CURDIR)/debian/openmediavault-transmissionbt/usr/share/openmediavault/scripts/transmissionbt
 
 	dh_installchangelogs
 	dh_installdebconf

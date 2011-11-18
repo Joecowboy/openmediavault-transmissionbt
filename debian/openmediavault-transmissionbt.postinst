@@ -94,7 +94,7 @@ case "$1" in
 		
 		if ! omv_config_exists "//services/transmissionbt/modules"; then
 			echo "Updateing configuration"
-			omv_config_add_element "//services" "transmissionbt" "<modules></modules>" true
+			omv_config_add_element "//services/transmissionbt" "modules" "" true
 		fi
 		
 		if ! omv_config_exists "//services/transmissionbt/modules/locationsandfiles"; then
