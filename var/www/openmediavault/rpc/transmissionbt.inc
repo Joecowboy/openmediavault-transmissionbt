@@ -105,9 +105,9 @@ class TransmissionBTRpc extends OMVRpc {
 					"peer-socket-tos":{"type":"string","enum":'.'["default","lowcost","throughput","lowdelay","reliability"]},
 					
 					"peer-port":{"type":"integer","minimum":1024,"maximum":65535},
-					"peer-port-random-high":{"type":"integer","minimum":1024,"maximum":65535},
 					"peer-port-random-low":{"type":"integer","minimum":1024,"maximum":65535},
-					"peer-port-random-on-start":{"type":"boolean"}
+					"peer-port-random-high":{"type":"integer","minimum":1024,"maximum":65535},
+					"peer-port-random-on-start":{"type":"boolean"},
 					"port-forwarding-enabled":{"type":"boolean"}
 				}
 			}')

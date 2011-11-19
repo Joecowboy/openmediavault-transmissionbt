@@ -145,11 +145,11 @@ xmlstarlet sel -t -m "//services/transmissionbt" \
   -i "modules/queuing/seed-queue-enabled[. = '1']" -o "true" -b \
   -o "," -n \
   -v "concat('&quot;seed-queue-size&quot;: ',modules/queuing/seed-queue-size,',')" -n \
-  -v "concat('&quot;bind-address-ipv4&quot;: ',modules/peer/bind-address-ipv4,',')" -n \
-  -v "concat('&quot;bind-address-ipv6&quot;: ',modules/peer/bind-address-ipv6,',')" -n \
+  -v "concat('&quot;bind-address-ipv4&quot;: &quot;',modules/peer/bind-address-ipv4,'&quot;,')" -n \
+  -v "concat('&quot;bind-address-ipv6&quot;: &quot;',modules/peer/bind-address-ipv6,'&quot;,')" -n \
   -v "concat('&quot;peer-limit-global&quot;: ',modules/peer/peer-limit-global,',')" -n \
   -v "concat('&quot;peer-limit-per-torrent&quot;: ',modules/peer/peer-limit-per-torrent,',')" -n \
-  -v "concat('&quot;peer-socket-tos&quot;: ',modules/peer/peer-socket-tos,',')" -n \
+  -v "concat('&quot;peer-socket-tos&quot;: &quot;',modules/peer/peer-socket-tos,'&quot;,')" -n \
   -v "concat('&quot;peer-port&quot;: ',modules/peer/peer-port,',')" -n \
   -v "concat('&quot;peer-port-random-high&quot;: ',modules/peer/peer-port-random-high,',')" -n \
   -v "concat('&quot;peer-port-random-low&quot;: ',modules/peer/peer-port-random-low,',')" -n \

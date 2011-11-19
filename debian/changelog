@@ -2,8 +2,9 @@ openmediavault-transmissionbt (0.2.6) stable; urgency=low
 
   * Github Issue #6 - Clean PHP Code, add correct type handling
   * Github Issue #9 - Add Configuration Options to "General Settings"
+  * Github Issue #11 - Can't start transmission
   
- -- Marcel Beck <marcel.beck@mbeck.org>  Sat, 19 Nov 2011 01:39:50 +0100
+ -- Marcel Beck <marcel.beck@mbeck.org>  Sat, 19 Nov 2011 14:25:39 +0100
 
 openmediavault-transmissionbt (0.2.5) stable; urgency=low
 
