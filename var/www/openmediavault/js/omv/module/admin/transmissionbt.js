@@ -297,14 +297,19 @@ Ext.extend(OMV.Module.Services.TransmissionBTPeerPanel, OMV.FormPanelExt, {
 					xtype: "textfield",
 					name: "bind-address-ipv4",
 					fieldLabel: "IPv4",
+					vtype: "IPv4Net",
 					allowBlank: false,
-					value: "0.0.0.0"
+					value: "0.0.0.0",
+					plugins: [ OMV.form.plugins.FieldInfo ],
+					infoText: "IPv4 address to listen on. Use 0.0.0.0 for all host IPs." 
 				},{
 					xtype: "textfield",
 					name: "bind-address-ipv6",
 					fieldLabel: "IPv6",
 					allowBlank: false,
-					value: "::"
+					value: "::",
+					plugins: [ OMV.form.plugins.FieldInfo ],
+					infoText: "IPv6 address to listen on. Use :: for all host IPs." 
 				}]
 			},{
 				xtype: "fieldset",
@@ -372,6 +377,13 @@ Ext.extend(OMV.Module.Services.TransmissionBTPeerPanel, OMV.FormPanelExt, {
 				plugins: [ OMV.form.plugins.FieldInfo ],
 				infoText: "Port to listen for incoming peer connections."
 			},{
+				xtype: "checkbox",
+				name: "peer-port-random-on-start",
+				fieldLabel: "Random Port",
+				checked: false,
+				inputValue: 1,
+				boxLabel: "Random Port on start."
+			},{
 				xtype: "numberfield",
 				name: "peer-port-random-high",
 				fieldLabel: "Random high",
@@ -394,13 +406,6 @@ Ext.extend(OMV.Module.Services.TransmissionBTPeerPanel, OMV.FormPanelExt, {
 				allowNegative: false,
 				allowBlank: false,
 				value: 1024,
-			},{
-				xtype: "checkbox",
-				name: "peer-port-random-on-start",
-				fieldLabel: "Random Port",
-				checked: false,
-				inputValue: 1,
-				boxLabel: "Random Port on start."
 			},{
 				xtype: "checkbox",
 				name: "port-forwarding-enabled",
@@ -571,6 +576,8 @@ Ext.extend(OMV.Module.Services.TransmissionBTBandwidthPanel, OMV.FormPanelExt, {
 				xtype: "numberfield",
 				name: "speed-limit-down",
 				fieldLabel: "Download",
+				allowDecimals: false,
+				allowNegative: false,
 				allowBlank: false,
 				value: 100,
 				plugins: [ OMV.form.plugins.FieldInfo ],
@@ -586,6 +593,8 @@ Ext.extend(OMV.Module.Services.TransmissionBTBandwidthPanel, OMV.FormPanelExt, {
 				xtype: "numberfield",
 				name: "speed-limit-up",
 				fieldLabel: "Upload",
+				allowDecimals: false,
+				allowNegative: false,
 				allowBlank: false,
 				value: 100,
 				plugins: [ OMV.form.plugins.FieldInfo ],
@@ -594,6 +603,8 @@ Ext.extend(OMV.Module.Services.TransmissionBTBandwidthPanel, OMV.FormPanelExt, {
 				xtype: "numberfield",
 				name: "upload-slots-per-torrent",
 				fieldLabel: "Upload slots",
+				allowDecimals: false,
+				allowNegative: false,
 				allowBlank: false,
 				value: 14
 			}]
@@ -615,6 +626,8 @@ Ext.extend(OMV.Module.Services.TransmissionBTBandwidthPanel, OMV.FormPanelExt, {
 				xtype: "numberfield",
 				name: "alt-speed-up",
 				fieldLabel: "Upload",
+				allowDecimals: false,
+				allowNegative: false,
 				allowBlank: false,
 				value: 50,
 				plugins: [ OMV.form.plugins.FieldInfo ],
@@ -623,6 +636,8 @@ Ext.extend(OMV.Module.Services.TransmissionBTBandwidthPanel, OMV.FormPanelExt, {
 				xtype: "numberfield",
 				name: "alt-speed-down",
 				fieldLabel: "Download",
+				allowDecimals: false,
+				allowNegative: false,
 				allowBlank: false,
 				value: 50,
 				plugins: [ OMV.form.plugins.FieldInfo ],
@@ -670,6 +685,8 @@ Ext.extend(OMV.Module.Services.TransmissionBTQueuingPanel, OMV.FormPanelExt, {
 				xtype: "numberfield",
 				name: "queue-stalled-minutes",
 				fieldLabel: "Stalled Minutes",
+				allowDecimals: false,
+				allowNegative: false,
 				allowBlank: false,
 				value: 30
 			}]
@@ -690,6 +707,8 @@ Ext.extend(OMV.Module.Services.TransmissionBTQueuingPanel, OMV.FormPanelExt, {
 				xtype: "numberfield",
 				name: "download-queue-size",
 				fieldLabel: "Size",
+				allowDecimals: false,
+				allowNegative: false,
 				allowBlank: false,
 				value: 5
 			}]
@@ -710,6 +729,8 @@ Ext.extend(OMV.Module.Services.TransmissionBTQueuingPanel, OMV.FormPanelExt, {
 				xtype: "numberfield",
 				name: "seed-queue-size",
 				fieldLabel: "Size",
+				allowDecimals: false,
+				allowNegative: false,
 				allowBlank: false,
 				value: 10
 			}]
