@@ -90,6 +90,20 @@ Ext.extend(OMV.Module.Services.TransmissionBTSettingsPanel, OMV.FormPanelExt, {
 				inputValue: 1,
 				boxLabel: "Enable distributed hash table."
 			},{
+				xtype: "checkbox",
+				name: "lpd-enabled",
+				fieldLabel: "Local Peer Discovery (LPD).",
+				checked: false,
+				inputValue: 1,
+				boxLabel: "Enable local peer discovery."
+			},{
+				xtype: "checkbox",
+				name: "utp-enabled",
+				fieldLabel: "Micro Transport Protocol (&micro;TP).",
+				checked: true,
+				inputValue: 1,
+				boxLabel: "Enable micro transport protocol."
+			},{
 				xtype: "combo",
 				name: "encryption",
 				hiddenName: "encryption",
@@ -111,6 +125,43 @@ Ext.extend(OMV.Module.Services.TransmissionBTSettingsPanel, OMV.FormPanelExt, {
 				value: 1,
 				plugins: [ OMV.form.plugins.FieldInfo ],
 				infoText: "The peer connection encryption mode."
+			},{
+				xtype: "combo",
+				name: "message-level",
+				hiddenName: "message-level",
+				fieldLabel: "Message Level",
+				mode: "local",
+				store: new Ext.data.SimpleStore({
+					fields: [ "value","text" ],
+					data: [
+						[ 0,"None" ],
+						[ 1,"Error" ],
+						[ 2,"Info" ],
+						[ 3,"Debug" ]
+					]
+				}),
+				displayField: "text",
+				valueField: "value",
+				allowBlank: false,
+				editable: false,
+				triggerAction: "all",
+				value: 2,
+				plugins: [ OMV.form.plugins.FieldInfo ],
+				infoText: "Set verbosity of transmission messages."
+			},{
+				xtype: "checkbox",
+				name: "lazy-bitfield-enabled",
+				fieldLabel: "Lazy Bitfield",
+				checked: true,
+				inputValue: 1,
+				boxLabel: "May help get around some ISP filtering."
+			},{
+				xtype: "checkbox",
+				name: "scrape-paused-torrents-enabled",
+				fieldLabel: "Scrape paused torrents.",
+				checked: true,
+				inputValue: 1,
+				boxLabel: "Enable paused torrent scraping."
 			}]
 		},{
 			xtype: "fieldset",

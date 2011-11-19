@@ -64,6 +64,23 @@ xmlstarlet sel -t -m "//services/transmissionbt" \
   -i "pexenabled[. = '0']" -o "false" -b \
   -i "pexenabled[. = '1']" -o "true" -b \
   -o "," -n \
+  -o "&quot;lazy-bitfield-enabled&quot;: " \
+  -i "lazy-bitfield-enabled[. = '0']" -o "false" -b \
+  -i "lazy-bitfield-enabled[. = '1']" -o "true" -b \
+  -o "," -n \
+  -o "&quot;lpd-enabled&quot;: " \
+  -i "lpd-enabled[. = '0']" -o "false" -b \
+  -i "lpd-enabled[. = '1']" -o "true" -b \
+  -o "," -n \
+  -o "&quot;scrape-paused-torrents-enabled&quot;: " \
+  -i "scrape-paused-torrents-enabled[. = '0']" -o "false" -b \
+  -i "scrape-paused-torrents-enabled[. = '1']" -o "true" -b \
+  -o "," -n \
+  -o "&quot;utp-enabled&quot;: " \
+  -i "utp-enabled[. = '0']" -o "false" -b \
+  -i "utp-enabled[. = '1']" -o "true" -b \
+  -o "," -n \
+  -v "concat('&quot;message-level&quot;: ',message-level,',')" -n \
   -o "&quot;rpc-authentication-required&quot;: " \
   -i "rpcauthenticationrequired[. = '0']" -o "false" -b \
   -i "rpcauthenticationrequired[. = '1']" -o "true" -b \

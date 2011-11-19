@@ -175,6 +175,25 @@ case "$1" in
 			omv_config_add_element "//services/transmissionbt/modules" "peer" "${object}" true
 		fi
 		
+		if ! omv_config_exists "//services/transmissionbt/lazy-bitfield-enabled"; then
+			omv_config_add_element "//services/transmissionbt" "lazy-bitfield-enabled" "1"
+		fi
+		
+		if ! omv_config_exists "//services/transmissionbt/lpd-enabled"; then
+			omv_config_add_element "//services/transmissionbt" "lpd-enabled" "0"
+		fi
+		
+		if ! omv_config_exists "//services/transmissionbt/scrape-paused-torrents-enabled"; then
+			omv_config_add_element "//services/transmissionbt" "scrape-paused-torrents-enabled" "1"
+		fi
+		
+		if ! omv_config_exists "//services/transmissionbt/utp-enabled"; then
+			omv_config_add_element "//services/transmissionbt" "utp-enabled" "1"
+		fi
+		
+		if ! omv_config_exists "//services/transmissionbt/message-level"; then
+			omv_config_add_element "//services/transmissionbt" "message-level" "2"
+		fi
 
 		########################################################################
 		# Import system group 'debian-transmission' created by the

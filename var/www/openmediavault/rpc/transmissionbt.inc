@@ -45,7 +45,12 @@ class TransmissionBTRpc extends OMVRpc {
 					"blocklistenabled":{"type":"boolean"},
 					"blocklistsyncenabled":{"type":"boolean"},
 					"blocklistsyncfrequency":{"type":"string","enum":'.'["hourly","daily","weekly","monthly"]},
-					"blocklisturl":{"type":"string"}
+					"blocklisturl":{"type":"string"},
+					"lazy-bitfield-enabled":{"type":"boolean"},
+					"lpd-enabled":{"type":"boolean"},
+					"scrape-paused-torrents-enabled":{"type":"boolean"},
+					"utp-enabled":{"type":"boolean"},
+					"message-level":{"type":"integer","enum":[0,1,2,3]}
 				}
 			}'),
 			"setLocationsAndFiles" => array('{
@@ -137,6 +142,13 @@ class TransmissionBTRpc extends OMVRpc {
 		$object['rpcauthenticationrequired'] = boolval($object['rpcauthenticationrequired']);
 		$object['blocklistenabled'] = boolval($object['blocklistenabled']);
 		$object['blocklistsyncenabled'] = boolval($object['blocklistsyncenabled']);
+		
+		$object['lazy-bitfield-enabled'] = boolval($object['lazy-bitfield-enabled']);
+		$object['lpd-enabled'] = boolval($object['lpd-enabled']);
+		$object['scrape-paused-torrents-enabled'] = boolval($object['scrape-paused-torrents-enabled']);
+		$object['utp-enabled'] = boolval($object['utp-enabled']);
+		$object['message-level'] = intval($object['message-level']);
+		
 		return $object;
 	}
 
@@ -179,8 +191,13 @@ class TransmissionBTRpc extends OMVRpc {
 			"blocklistsyncenabled" => array_boolval($data,'blocklistsyncenabled'),
 			"blocklistsyncfrequency" => $data['blocklistsyncfrequency'],
 			"blocklisturl" => $data['blocklisturl'],
-			"modules" => isset($oldObject['modules']) ?
-			  $oldObject['modules'] : array()
+			"modules" => isset($oldObject['modules']) ? $oldObject['modules'] : array(),
+			
+			"lazy-bitfield-enabled" => array_boolval($data,'lazy-bitfield-enabled'),
+			"lpd-enabled" => array_boolval($data,'lpd-enabled'),
+			"scrape-paused-torrents-enabled" => array_boolval($data,'scrape-paused-torrents-enabled'),
+			"utp-enabled" => array_boolval($data,'utp-enabled'),
+			"message-level" => $data['message-level'],
 		);
 		// Set configuration object		
 		if (FALSE === $xmlConfig->replace($xpath, $object)) {
