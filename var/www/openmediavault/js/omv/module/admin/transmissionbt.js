@@ -385,17 +385,6 @@ Ext.extend(OMV.Module.Services.TransmissionBTPeerPanel, OMV.FormPanelExt, {
 				boxLabel: "Random Port on start."
 			},{
 				xtype: "numberfield",
-				name: "peer-port-random-high",
-				fieldLabel: "Random high",
-				vtype: "port",
-				minValue: 1024,
-				maxValue: 65535,
-				allowDecimals: false,
-				allowNegative: false,
-				allowBlank: false,
-				value: 65535,
-			},{
-				xtype: "numberfield",
 				name: "peer-port-random-low",
 				fieldLabel: "Random low",
 				allowBlank: false,
@@ -406,6 +395,17 @@ Ext.extend(OMV.Module.Services.TransmissionBTPeerPanel, OMV.FormPanelExt, {
 				allowNegative: false,
 				allowBlank: false,
 				value: 1024,
+			},{
+				xtype: "numberfield",
+				name: "peer-port-random-high",
+				fieldLabel: "Random high",
+				vtype: "port",
+				minValue: 1024,
+				maxValue: 65535,
+				allowDecimals: false,
+				allowNegative: false,
+				allowBlank: false,
+				value: 65535,
 			},{
 				xtype: "checkbox",
 				name: "port-forwarding-enabled",
