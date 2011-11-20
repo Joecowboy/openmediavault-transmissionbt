@@ -208,6 +208,10 @@ case "$1" in
 			object="${object}<ratio-limit-enabled>0</ratio-limit-enabled>"
 			omv_config_add_element "//services/transmissionbt/modules" "scheduling" "${object}" true
 		fi
+		
+		if ! omv_config_exists "//services/transmissionbt/umask"; then
+			omv_config_add_element "//services/transmissionbt" "umask" "18"
+		fi
 
 		########################################################################
 		# Import system group 'debian-transmission' created by the

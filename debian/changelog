@@ -1,3 +1,9 @@
+openmediavault-transmissionbt (0.2.7.1) stable; urgency=low
+
+  * Github Issue #13 - umask Setting
+  
+ -- Marcel Beck <marcel.beck@mbeck.org>  Sun, 20 Nov 2011 15:19:59 +0100
+
 openmediavault-transmissionbt (0.2.7) stable; urgency=low
 
   * Github Issue #2 - Add Scheduling Section

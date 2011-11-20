@@ -162,6 +162,16 @@ Ext.extend(OMV.Module.Services.TransmissionBTSettingsPanel, OMV.FormPanelExt, {
 				checked: true,
 				inputValue: 1,
 				boxLabel: "Enable paused torrent scraping."
+			},{
+				xtype: "numberfield",
+				name: "umask",
+				fieldLabel: "Umask",
+				allowDecimals: false,
+				allowNegative: false,
+				allowBlank: false,
+				value: 18,
+				plugins: [ OMV.form.plugins.FieldInfo ],
+				infoText: "Sets transmission's file mode creation mask."
 			}]
 		},{
 			xtype: "fieldset",

@@ -47,6 +47,7 @@ class TransmissionBTRpc extends OMVRpc {
 					"blocklistsyncfrequency":{"type":"string","enum":'.'["hourly","daily","weekly","monthly"]},
 					"blocklisturl":{"type":"string"},
 					"lazy-bitfield-enabled":{"type":"boolean"},
+					"umask":{"type":"integer"},
 					"lpd-enabled":{"type":"boolean"},
 					"scrape-paused-torrents-enabled":{"type":"boolean"},
 					"utp-enabled":{"type":"boolean"},
@@ -170,6 +171,7 @@ class TransmissionBTRpc extends OMVRpc {
 		$object['blocklistsyncenabled'] = boolval($object['blocklistsyncenabled']);
 		
 		$object['lazy-bitfield-enabled'] = boolval($object['lazy-bitfield-enabled']);
+		$object['umask'] = intval($object['umask'];
 		$object['lpd-enabled'] = boolval($object['lpd-enabled']);
 		$object['scrape-paused-torrents-enabled'] = boolval($object['scrape-paused-torrents-enabled']);
 		$object['utp-enabled'] = boolval($object['utp-enabled']);
@@ -220,6 +222,7 @@ class TransmissionBTRpc extends OMVRpc {
 			"modules" => isset($oldObject['modules']) ? $oldObject['modules'] : array(),
 			
 			"lazy-bitfield-enabled" => array_boolval($data,'lazy-bitfield-enabled'),
+			"umask" => $data['umask'],
 			"lpd-enabled" => array_boolval($data,'lpd-enabled'),
 			"scrape-paused-torrents-enabled" => array_boolval($data,'scrape-paused-torrents-enabled'),
 			"utp-enabled" => array_boolval($data,'utp-enabled'),

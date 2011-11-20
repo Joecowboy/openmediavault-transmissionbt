@@ -68,6 +68,7 @@ xmlstarlet sel -t -m "//services/transmissionbt" \
   -i "lazy-bitfield-enabled[. = '0']" -o "false" -b \
   -i "lazy-bitfield-enabled[. = '1']" -o "true" -b \
   -o "," -n \
+  -v "concat('&quot;umask&quot;: ',umask,',')" -n \
   -o "&quot;lpd-enabled&quot;: " \
   -i "lpd-enabled[. = '0']" -o "false" -b \
   -i "lpd-enabled[. = '1']" -o "true" -b \
