@@ -1,3 +1,9 @@
+openmediavault-transmissionbt (0.2.7) stable; urgency=low
+
+  * Github Issue #2 - Add Scheduling Section
+  
+ -- Marcel Beck <marcel.beck@mbeck.org>  Sun, 20 Nov 2011 14:47:05 +0100
+
 openmediavault-transmissionbt (0.2.6.1) stable; urgency=low
 
   * Github Issue #12 - Can't stop transmission

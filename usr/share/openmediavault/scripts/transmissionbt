@@ -160,6 +160,23 @@ xmlstarlet sel -t -m "//services/transmissionbt" \
   -o "&quot;peer-port-random-on-start&quot;: " \
   -i "modules/peer/peer-port-random-on-start[. = '0']" -o "false" -b \
   -i "modules/peer/peer-port-random-on-start[. = '1']" -o "true" -b \
+  -o "," -n \
+  -o "&quot;alt-speed-time-enabled&quot;: " \
+  -i "modules/scheduling/alt-speed-time-enabled[. = '0']" -o "false" -b \
+  -i "modules/scheduling/alt-speed-time-enabled[. = '1']" -o "true" -b \
+  -o "," -n \
+  -v "concat('&quot;alt-speed-time-begin&quot;: ',modules/scheduling/alt-speed-time-begin,',')" -n \
+  -v "concat('&quot;alt-speed-time-end&quot;: ',modules/scheduling/alt-speed-time-end,',')" -n \
+  -v "concat('&quot;alt-speed-time-day&quot;: ',modules/scheduling/alt-speed-time-day,',')" -n \
+  -v "concat('&quot;idle-seeding-limit&quot;: ',modules/scheduling/idle-seeding-limit,',')" -n \
+  -o "&quot;idle-seeding-limit-enabled&quot;: " \
+  -i "modules/scheduling/idle-seeding-limit-enabled[. = '0']" -o "false" -b \
+  -i "modules/scheduling/idle-seeding-limit-enabled[. = '1']" -o "true" -b \
+  -o "," -n \
+  -v "concat('&quot;ratio-limit&quot;: ',modules/scheduling/ratio-limit,',')" -n \
+  -o "&quot;ratio-limit-enabled&quot;: " \
+  -i "modules/scheduling/ratio-limit-enabled[. = '0']" -o "false" -b \
+  -i "modules/scheduling/ratio-limit-enabled[. = '1']" -o "true" -b \
   -o "}" \
   ${OMV_CONFIG_FILE} | xmlstarlet unesc > ${OMV_TRANSMISSIONBT_CONFIG}
 

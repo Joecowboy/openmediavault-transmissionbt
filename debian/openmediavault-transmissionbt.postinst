@@ -194,6 +194,20 @@ case "$1" in
 		if ! omv_config_exists "//services/transmissionbt/message-level"; then
 			omv_config_add_element "//services/transmissionbt" "message-level" "2"
 		fi
+		
+		if ! omv_config_exists "//services/transmissionbt/modules/scheduling"; then
+			echo "Updateing Configuration"
+			echo "# Add modules/scheduling section"
+			object="<alt-speed-time-enabled>0</alt-speed-time-enabled>"
+			object="${object}<alt-speed-time-begin>540</alt-speed-time-begin>"
+			object="${object}<alt-speed-time-end>1020</alt-speed-time-end>"
+			object="${object}<alt-speed-time-day>127</alt-speed-time-day>"
+			object="${object}<idle-seeding-limit>30</idle-seeding-limit>"
+			object="${object}<idle-seeding-limit-enabled>0</idle-seeding-limit-enabled>"
+			object="${object}<ratio-limit>2.0</ratio-limit>"
+			object="${object}<ratio-limit-enabled>0</ratio-limit-enabled>"
+			omv_config_add_element "//services/transmissionbt/modules" "scheduling" "${object}" true
+		fi
 
 		########################################################################
 		# Import system group 'debian-transmission' created by the

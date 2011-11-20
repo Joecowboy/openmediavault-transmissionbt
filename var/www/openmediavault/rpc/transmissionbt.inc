@@ -110,6 +110,32 @@ class TransmissionBTRpc extends OMVRpc {
 					"peer-port-random-on-start":{"type":"boolean"},
 					"port-forwarding-enabled":{"type":"boolean"}
 				}
+			}'),
+			"setScheduling" => array('{
+				"type":"object",
+				"properties":{
+					"alt-speed-time-enabled":{"type":"boolean"},
+					
+					"begin-hour":{"type":"integer","minimum":0,"maximum":23},
+					"begin-minute":{"type":"integer","minimum":0,"maximum":59},
+					
+					"end-hour":{"type":"integer","minimum":0,"maximum":23},
+					"end-minute":{"type":"integer","minimum":0,"maximum":59},
+					
+					"days-sunday":{"type":"boolean"},
+					"days-monday":{"type":"boolean"},
+					"days-tuesday":{"type":"boolean"},
+					"days-wednesday":{"type":"boolean"},
+					"days-thursday":{"type":"boolean"},
+					"days-friday":{"type":"boolean"},
+					"days-saturday":{"type":"boolean"},
+					
+					"idle-seeding-limit":{"type":"integer","minimum":0},
+					"idle-seeding-limit-enabled":{"type":"boolean"},
+					
+					"ratio-limit":{"type":"integer","minimum":0},
+					"ratio-limit-enabled":{"type":"boolean"}
+				}
 			}')
 		);
 	}
@@ -518,6 +544,171 @@ class TransmissionBTRpc extends OMVRpc {
 		);
 		// Set configuration object
 		$xpath = "//services/transmissionbt/modules/peer";
+		if (FALSE === $xmlConfig->replace($xpath, $object)) {
+			throw new OMVException(OMVErrorMsg::E_CONFIG_SET_OBJECT_FAILED);
+		}
+		// Save configuration
+		if (FALSE === $xmlConfig->save()) {
+			throw new OMVException(OMVErrorMsg::E_CONFIG_SAVE_FAILED,
+			  $xmlConfig->getError());
+		}
+		// Notify configuration changes
+		$dispatcher = &OMVNotifyDispatcher::getInstance();
+		$dispatcher->notify(OMV_NOTIFY_MODIFY,
+		  "org.openmediavault.services.transmissionbt", $object);
+	}
+	
+	/**
+	 * Get configuration object.
+	 */
+	function getScheduling() {
+		global $xmlConfig;
+		// Check permissions
+		$this->validateSession();
+		if (!$this->hasRole(OMV_ROLE_ADMINISTRATOR)) {
+			throw new OMVException(OMVErrorMsg::E_RPC_SERVICE_INVALID_PERMISSION);
+		}
+		$this->commitSession();
+		// Get configuration object
+		$xpath = "//services/transmissionbt/modules/scheduling";
+		$object = $xmlConfig->get($xpath);
+		if (is_null($object)) {
+			throw new OMVException(OMVErrorMsg::E_CONFIG_GET_OBJECT_FAILED,
+			  $xpath);
+		}
+		
+		// Modify result data
+		// Scheduling
+		$object['alt-speed-time-enabled'] = boolval($object['alt-speed-time-enabled']);
+		$object['alt-speed-time-begin'] = intval($object['alt-speed-time-begin']);
+		
+		$object['begin-hour'] = intval($object['alt-speed-time-begin'] / 60);
+		$object['begin-minute'] = ($object['alt-speed-time-begin'] % 60);
+		
+		$object['alt-speed-time-end'] = intval($object['alt-speed-time-end']);
+		
+		$object['end-hour'] = intval($object['alt-speed-time-end'] / 60);
+		$object['end-minute'] = ($object['alt-speed-time-end'] % 60);
+		
+		$object['days-sunday'] = false;
+		if (($object['alt-speed-time-day'] & 1) === 1)
+		{
+			$object['days-sunday'] = true;
+		}
+		
+		$object['days-monday'] = false;
+		if (($object['alt-speed-time-day'] & 2) === 2)
+		{
+			$object['days-monday'] = true;
+		}
+		
+		$object['days-tuesday'] = false;
+		if (($object['alt-speed-time-day'] & 4) === 4)
+		{
+			$object['days-tuesday'] = true;
+		}
+		
+		$object['days-wednesday'] = false;
+		if (($object['alt-speed-time-day'] & 8) === 8)
+		{
+			$object['days-wednesday'] = true;
+		}
+		
+		$object['days-thursday'] = false;
+		if (($object['alt-speed-time-day'] & 16) === 16)
+		{
+			$object['days-thursday'] = true;
+		}
+		
+		$object['days-friday'] = false;
+		if (($object['alt-speed-time-day'] & 32) === 32)
+		{
+			$object['days-friday'] = true;
+		}
+		
+		$object['days-saturday'] = false;
+		if (($object['alt-speed-time-day'] & 64) === 64)
+		{
+			$object['days-saturday'] = true;
+		}
+		
+		// Idle
+		$object['idle-seeding-limit'] = intval($object['idle-seeding-limit']);
+		$object['idle-seeding-limit-enabled'] = boolval($object['idle-seeding-limit-enabled']);
+		
+		// Ratio
+		$object['ratio-limit'] = floatval($object['ratio-limit']);
+		$object['ratio-limit-enabled'] = boolval($object['ratio-limit-enabled']);
+		
+		return $object;
+	}
+
+	/**
+	 * Set configuration object.
+	 */
+	function setScheduling($data) {
+//		$this->debug(var_export(func_get_args(), TRUE));
+		global $xmlConfig;
+		// Check permissions
+		$this->validateSession();
+		if (!$this->hasRole(OMV_ROLE_ADMINISTRATOR)) {
+			throw new OMVException(OMVErrorMsg::E_RPC_SERVICE_INVALID_PERMISSION);
+		}
+		$this->commitSession();
+		// Validate method parameters
+		$this->validateParams(__METHOD__, func_get_args());
+		
+		$data['alt-speed-time-day'] = 0;
+		
+		if (array_boolval($data, 'days-sunday') === true)
+		{
+			$data['alt-speed-time-day'] += 1;
+		}
+		if (array_boolval($data, 'days-monday') === true)
+		{
+			$data['alt-speed-time-day'] += 2;
+		}
+		if (array_boolval($data, 'days-tuesday') === true)
+		{
+			$data['alt-speed-time-day'] += 4;
+		}
+		if (array_boolval($data, 'days-wednesday') === true)
+		{
+			$data['alt-speed-time-day'] += 8;
+		}
+		if (array_boolval($data, 'days-thursday') === true)
+		{
+			$data['alt-speed-time-day'] += 16;
+		}
+		if (array_boolval($data, 'days-friday') === true)
+		{
+			$data['alt-speed-time-day'] += 32;
+		}
+		if (array_boolval($data, 'days-saturday') === true)
+		{
+			$data['alt-speed-time-day'] += 64;
+		}
+		// Prepare configuration data
+		$object = array(
+			'alt-speed-time-enabled' => array_boolval($data, 'alt-speed-time-enabled'),
+			
+			
+			'alt-speed-time-begin' => intval(($data['begin-hour'] * 60) + $data['begin-minute']),
+			'alt-speed-time-end' => intval(($data['end-hour'] * 60) + $data['end-minute']),
+			
+			'alt-speed-time-day' => $data['alt-speed-time-day'],
+			
+			
+			// Idle
+			'idle-seeding-limit' => $data['idle-seeding-limit'],
+			'idle-seeding-limit-enabled' => array_boolval($data, 'idle-seeding-limit-enabled'),
+			
+			// Ratio
+			'ratio-limit' => $data['ratio-limit'],
+			'ratio-limit-enabled' => array_boolval($data, 'ratio-limit-enabled'),
+		);
+		// Set configuration object
+		$xpath = "//services/transmissionbt/modules/scheduling";
 		if (FALSE === $xmlConfig->replace($xpath, $object)) {
 			throw new OMVException(OMVErrorMsg::E_CONFIG_SET_OBJECT_FAILED);
 		}
