@@ -171,7 +171,7 @@ class TransmissionBTRpc extends OMVRpc {
 		$object['blocklistsyncenabled'] = boolval($object['blocklistsyncenabled']);
 		
 		$object['lazy-bitfield-enabled'] = boolval($object['lazy-bitfield-enabled']);
-		$object['umask'] = intval($object['umask'];
+		$object['umask'] = intval($object['umask']);
 		$object['lpd-enabled'] = boolval($object['lpd-enabled']);
 		$object['scrape-paused-torrents-enabled'] = boolval($object['scrape-paused-torrents-enabled']);
 		$object['utp-enabled'] = boolval($object['utp-enabled']);
