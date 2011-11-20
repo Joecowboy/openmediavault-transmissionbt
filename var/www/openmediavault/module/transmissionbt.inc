@@ -74,7 +74,10 @@ class TransmissionBTModule extends OMVModuleAbstract implements
 		// file on exit. This means transmission must be terminated before
 		// writing the new settings.json file.
 		$initd = new OMVSysVInitScript("transmission-daemon", boolval($object['enable']));
-		//$initd->stop();
+		if (boolval($object['enable']) === false)
+		{
+			$initd->stop();
+		}
 		// Create '/etc/transmission-daemon/settings.json' file
 		$cmd = "sudo omv-mkconf transmissionbt 2>&1";
 		OMVUtil::exec($cmd, $output, $result);
@@ -87,7 +90,10 @@ class TransmissionBTModule extends OMVModuleAbstract implements
 		OMVUtil::exec($cmd, $output, $result);
 		if ($result !== 0) {
 			// Start the Service, it is not running
-			$initd->exec();
+			if (boolval($object['enable']) === true)
+			{
+				$initd->exec();
+			}
 			//throw new OMVException(OMVErrorMsg::E_EXEC_FAILED, $cmd, 'Result: '.$result. implode("\n", $output));
 		}
 	}

@@ -1,3 +1,9 @@
+openmediavault-transmissionbt (0.2.6.1) stable; urgency=low
+
+  * Github Issue #12 - Can't stop transmission
+  
+ -- Marcel Beck <marcel.beck@mbeck.org>  Sun, 20 Nov 2011 11:41:35 +0100
+
 openmediavault-transmissionbt (0.2.6) stable; urgency=low
 
   * Github Issue #6 - Clean PHP Code, add correct type handling
