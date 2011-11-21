@@ -26,6 +26,8 @@ require_once("openmediavault/util.inc");
 require_once("openmediavault/rpc.inc");
 require_once("openmediavault/notify.inc");
 
+require_once("transmissionrpc.inc");
+
 class TransmissionBTRpc extends OMVRpc {
 	public function __construct() {
 		$this->methodSchemata = array(
@@ -127,7 +129,23 @@ class TransmissionBTRpc extends OMVRpc {
 					"ratio-limit":{"type":"integer","minimum":0},
 					"ratio-limit-enabled":{"type":"boolean"}
 				}
-			}')
+			}'),
+			"getList" => array(
+				'{"type":"integer"}', // start
+				'{"type":"integer"}', // count
+				'{'.$GLOBALS['OMV_JSONSCHEMA_SORTFIELD'].'}', // sortField
+				'{'.$GLOBALS['OMV_JSONSCHEMA_SORTDIR'].'}', // sortDir
+				'{"type":"array","items":{"type":"string"}}' // types
+			),
+			"delete" => array(
+				'{"type":"integer", "minimum":0}'
+			),
+			"pause" => array(
+				'{"type":"integer", "minimum":0}'
+			),
+			"resume" => array(
+				'{"type":"integer", "minimum":0}'
+			),
 		);
 	}
 
@@ -658,6 +676,163 @@ class TransmissionBTRpc extends OMVRpc {
 		$dispatcher = &OMVNotifyDispatcher::getInstance();
 		$dispatcher->notify(OMV_NOTIFY_MODIFY,
 		  "org.openmediavault.services.transmissionbt", $object);
+	}
+	
+	/**
+	 * Get the cron jobs of the requested types.
+	 * @param types Array of cron jobs types which are reboot, shutdown
+	 * or userdefined.
+	 * @return An array of cron jobs of the requested types.
+	 */
+	public function getList($start, $count, $sortField, $sortDir, $types) {
+//		$this->debug(var_export(func_get_args(), TRUE));
+		global $xmlConfig;
+		// Check permissions
+		$this->validateSession();
+		//if (!$this->hasRole(OMV_ROLE_ADMINISTRATOR)) {
+		//	throw new OMVException(OMVErrorMsg::E_RPC_SERVICE_INVALID_PERMISSION);
+		//}
+		$this->commitSession();
+		// Validate method parameters
+		$this->validateParams(__METHOD__, func_get_args());
+		// Get configuration data
+		$xpath = "//services/transmissionbt";
+		$object = $xmlConfig->get($xpath);
+		if (is_null($object)) {
+			throw new OMVException(OMVErrorMsg::E_CONFIG_GET_OBJECT_FAILED,
+			  $xpath);
+		}
+		
+		$transmissionbt_rpc = new TransmissionRPC();
+		$transmissionbt_rpc->return_as_array = true;
+		// Set authentication when needed
+		if (array_boolval($object, 'rpcauthenticationrequired') === true)
+		{
+			$transmissionbt_rpc->username = $object['rpcusername'];
+			$transmissionbt_rpc->password = $object['rpcpassword'];
+		}
+		
+		$torrents = $transmissionbt_rpc->get(array(), array(
+															'id',
+															'name',
+															'status',
+															'totalSize',
+															'haveValid',
+															'percentDone',
+															'eta',
+															'peersConnected',
+															'peersSendingToUs',
+															'rateDownload',
+															'rateUpload',
+															)
+		);
+		
+		$torrents = $torrents['arguments']['torrents'];
+		
+		// Filter result
+		return $this->applyFilter($torrents, $start, $count, $sortField, $sortDir);
+	}
+	
+	function upload() {
+		global $xmlConfig;
+		// Check permissions
+		$this->validateSession();
+		//if (!$this->hasRole(OMV_ROLE_ADMINISTRATOR)) {
+		//	throw new OMVException(OMVErrorMsg::E_RPC_SERVICE_INVALID_PERMISSION);
+		//}
+		$this->commitSession();
+		// Is file successfully upload?
+		if (!is_uploaded_file($_FILES['file']['tmp_name'])) {
+			throw new OMVException(OMVErrorMsg::E_MISC_FAILURE,
+			  "Invalid upload request");
+		}
+		// Get configuration data
+		$xpath = "//services/transmissionbt";
+		$object = $xmlConfig->get($xpath);
+		if (is_null($object)) {
+			throw new OMVException(OMVErrorMsg::E_CONFIG_GET_OBJECT_FAILED,
+			  $xpath);
+		}
+		
+		$transmissionbt_rpc = new TransmissionRPC();
+		$transmissionbt_rpc->return_as_array = true;
+		// Set authentication when needed
+		if (array_boolval($object, 'rpcauthenticationrequired') === true)
+		{
+			$transmissionbt_rpc->username = $object['rpcusername'];
+			$transmissionbt_rpc->password = $object['rpcpassword'];
+		}
+		
+		move_uploaded_file($_FILES['file']['tmp_name'], sys_get_temp_dir() . '/' . $_FILES['file']['name']);
+		
+		$torrent = $transmissionbt_rpc->add_file(sys_get_temp_dir() . '/' . $_FILES['file']['name']);
+		unlink(sys_get_temp_dir() . '/' . $_FILES['file']['name']);
+	}
+	
+	public function resume($id) {
+//		$this->debug(var_export(func_get_args(), TRUE));
+		global $xmlConfig;
+		// Check permissions
+		$this->validateSession();
+		//if (!$this->hasRole(OMV_ROLE_ADMINISTRATOR)) {
+		//	throw new OMVException(OMVErrorMsg::E_RPC_SERVICE_INVALID_PERMISSION);
+		//}
+		$this->commitSession();
+		// Validate method parameters
+		$this->validateParams(__METHOD__, func_get_args());
+		// Get configuration data
+		$xpath = "//services/transmissionbt";
+		$object = $xmlConfig->get($xpath);
+		if (is_null($object)) {
+			throw new OMVException(OMVErrorMsg::E_CONFIG_GET_OBJECT_FAILED,
+			  $xpath);
+		}
+		
+		$transmissionbt_rpc = new TransmissionRPC();
+		$transmissionbt_rpc->return_as_array = true;
+		// Set authentication when needed
+		if (array_boolval($object, 'rpcauthenticationrequired') === true)
+		{
+			$transmissionbt_rpc->username = $object['rpcusername'];
+			$transmissionbt_rpc->password = $object['rpcpassword'];
+		}
+		
+		$transmissionbt_rpc->start($id);
+		
+		return 'success';
+	}
+	
+	public function pause($id) {
+//		$this->debug(var_export(func_get_args(), TRUE));
+		global $xmlConfig;
+		// Check permissions
+		$this->validateSession();
+		//if (!$this->hasRole(OMV_ROLE_ADMINISTRATOR)) {
+		//	throw new OMVException(OMVErrorMsg::E_RPC_SERVICE_INVALID_PERMISSION);
+		//}
+		$this->commitSession();
+		// Validate method parameters
+		$this->validateParams(__METHOD__, func_get_args());
+		// Get configuration data
+		$xpath = "//services/transmissionbt";
+		$object = $xmlConfig->get($xpath);
+		if (is_null($object)) {
+			throw new OMVException(OMVErrorMsg::E_CONFIG_GET_OBJECT_FAILED,
+			  $xpath);
+		}
+		
+		$transmissionbt_rpc = new TransmissionRPC();
+		$transmissionbt_rpc->return_as_array = true;
+		// Set authentication when needed
+		if (array_boolval($object, 'rpcauthenticationrequired') === true)
+		{
+			$transmissionbt_rpc->username = $object['rpcusername'];
+			$transmissionbt_rpc->password = $object['rpcpassword'];
+		}
+		
+		$transmissionbt_rpc->stop($id);
+		
+		return 'success';
 	}
 }
 ?>
