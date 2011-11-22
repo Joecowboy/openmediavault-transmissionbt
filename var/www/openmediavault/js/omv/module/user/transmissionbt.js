@@ -26,7 +26,8 @@
 // require("js/omv/form/MultiSelect.js")
 // require("js/omv/util/Format.js")
 // require("js/omv/ExecCmdDialog.js")
-// require("js/omv/UploadDialog.js")
+// require("js/omv/module/transmissionbt/uploadDialog.js")
+// require("js/omv/module/transmissionbt/deleteDialog.js")
 
 Ext.ns("OMV.Module.Services");
 
@@ -43,13 +44,14 @@ OMV.NavigationPanelMgr.registerMenu("services", "transmissionbt", {
 OMV.Module.Services.TransmissionBTGridPanel = function(config) {
 	var initialConfig = {
 		autoReload: true,
-		reloadInterval: 5000,
+		reloadInterval: 10000,
 		hidePagingToolbar: true,
 		hideAdd: true,
 		hideEdit: true,
 		hideDelete: true,
 		resumeWaitMsg: "Resuming selected item(s)",
 		pauseWaitMsg: "Pausing selected item(s)",
+		deleteWaitMsg: "Deleting selected item(s)",
 		stateId: "cb44cbf3-b1cb-b6ba-13548ab0dc7c246c",
 		colModel: new Ext.grid.ColumnModel({
 			columns: [{
@@ -103,6 +105,25 @@ OMV.Module.Services.TransmissionBTGridPanel = function(config) {
 				id: "rateUpload",
 				renderer: this.rateRenderer,
 				scope: this
+			},{
+				header: "Date Added",
+				sortable: true,
+				dataIndex: "addedDate",
+				id: "addedDate",
+				renderer: this.timestampRenderer,
+				scope: this
+			},{
+				header: "Date Done",
+				sortable: true,
+				dataIndex: "doneDate",
+				id: "doneDate",
+				renderer: this.timestampRenderer,
+				scope: this
+			},{
+				header: "Ratio",
+				sortable: true,
+				dataIndex: "uploadRatio",
+				id: "uploadRatio"
 			}]
 		})
 	};
@@ -132,7 +153,10 @@ Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, 
 					{ name: "peersConnected" },
 					{ name: "peersSendingToUs" },
 					{ name: "rateDownload" },
-					{ name: "rateUpload" }
+					{ name: "rateUpload" },
+					{ name: "addedDate" },
+					{ name: "doneDate" },
+					{ name: "uploadRatio" }
     			]
 			})
 		});
@@ -192,7 +216,14 @@ Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, 
 	cbSelectionChangeHdl : function(model) {
 		OMV.Module.Services.TransmissionBTGridPanel.superclass.cbSelectionChangeHdl.apply(this, arguments);
 		// Process additional buttons
-		var records = model.getSelections();
+		this.toggleButtons();
+	},
+	
+	toggleButtons : function()
+	{
+		var sm = this.getSelectionModel();
+		var records = sm.getSelections();
+	
 		var tbarDeleteCtrl = this.getTopToolbar().findById(this.getId() + "-delete");
 		var tbarPauseCtrl = this.getTopToolbar().findById(this.getId() + "-pause");
 		var tbarResumeCtrl = this.getTopToolbar().findById(this.getId() + "-resume");
@@ -200,10 +231,54 @@ Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, 
 			tbarDeleteCtrl.disable();
 			tbarPauseCtrl.disable();
 			tbarResumeCtrl.disable();
+		} else if (records.length == 1) {
+			var record = records.pop();
+			var status = parseInt(record.get("status"));
+			switch (status)
+			{
+				case 1:
+					tbarDeleteCtrl.enable();
+					tbarPauseCtrl.enable();
+					tbarResumeCtrl.disable();
+					break;
+				case 2:
+					tbarDeleteCtrl.enable();
+					tbarPauseCtrl.enable();
+					tbarResumeCtrl.disable();
+					break;
+				case 4:
+					tbarDeleteCtrl.enable();
+					tbarPauseCtrl.enable();
+					tbarResumeCtrl.disable();
+					break;
+				case 8:
+					tbarDeleteCtrl.enable();
+					tbarPauseCtrl.enable();
+					tbarResumeCtrl.disable();
+					break;
+				case 16:
+					tbarDeleteCtrl.enable();
+					tbarPauseCtrl.disable();
+					tbarResumeCtrl.enable();
+					break;
+				default:
+					break;
+			}
 		} else {
 			tbarDeleteCtrl.enable();
 			tbarPauseCtrl.enable();
 			tbarResumeCtrl.enable();
+		}
+	},
+	
+	/**
+	 * @method doReload
+	 * Reload the grid content.
+	 */
+	doReload : function() {
+		if (this.mode === "remote") {
+			this.store.reload();
+			this.toggleButtons();
 		}
 	},
 	
@@ -212,7 +287,7 @@ Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, 
 	},
 	
 	cbUploadBtnHdl : function() {
-		var wnd = new OMV.UploadDialog({
+		var wnd = new OMV.TransmissionBT.UploadDialog({
 			title: "Upload torrent",
 			service: "TransmissionBT",
 			method: "upload",
@@ -228,9 +303,87 @@ Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, 
 		wnd.show();
 	},
 	
-	doDeletion : function(record) {
-		OMV.Ajax.request(this.cbDeletionHdl, this, "TransmissionBT",
-		  "delete", [ record.get("id") ]);
+	cbDeleteBtnHdl : function() {
+		var selModel = this.getSelectionModel();
+		var records = selModel.getSelections();
+		var wnd = new OMV.TransmissionBT.DeleteDialog({
+			title: "Upload torrent",
+			service: "TransmissionBT",
+			method: "upload",
+			listeners: {
+				success: function(wnd, delete_local_data) {
+					this.startDelete(selModel, records, delete_local_data);
+					this.cbReloadBtnHdl();
+				},
+				scope: this
+			}
+		});
+		wnd.show();
+	},
+	
+	startDelete: function(model, records, delete_local_data) {
+		if (records.length <= 0)
+			return;
+		// Store selected records in a local variable
+		this.deleteActionInfo = {
+			records: records,
+			count: records.length
+		}
+		// Get first record to be deleted
+		var record = this.deleteActionInfo.records.pop();
+		// Display progress dialog
+		OMV.MessageBox.progress("", this.deleteWaitMsg, "");
+		this.updateDeleteProgress();
+		// Execute deletion function
+		this.doDelete(record, delete_local_data);
+	},
+	
+	doDelete : function(record, delete_local_data) {
+		OMV.Ajax.request(this.cbDeleteHdl, this, "TransmissionBT", "delete", [{ id:  record.get("id"), deleteLocalData: delete_local_data }] );
+		
+		
+	},
+	
+	updateDeleteProgress : function() {
+		// Calculate percentage
+		var p = (this.deleteActionInfo.count - this.deleteActionInfo.records.length) /
+		  this.deleteActionInfo.count;
+		// Create message text
+		var text = Math.round(100 * p) + "% completed ...";
+		// Update progress dialog
+		OMV.MessageBox.updateProgress(p, text);
+	},
+	
+	cbDeleteHdl : function(id, response, error) {
+		if (error !== null) {
+			// Remove temporary local variables
+			delete this.deleteActionInfo;
+			// Hide progress dialog
+			OMV.MessageBox.hide();
+			// Display error message
+			OMV.MessageBox.error(null, error);
+		} else {
+			if (this.deleteActionInfo.records.length > 0) {
+				var record = this.deleteActionInfo.records.pop();
+				// Update progress dialog
+				this.updateDeleteProgress();
+				// Execute deletion function
+				this.doDelete(record);
+			} else {
+				// Remove temporary local variables
+				delete this.deleteActionInfo;
+				// Update and hide progress dialog
+				OMV.MessageBox.updateProgress(1, "100% completed ...");
+				OMV.MessageBox.hide();
+				this.afterDelete();
+			}
+		}
+	},
+	
+	afterDelete : function() {
+		if (this.mode === "remote") {
+			this.doReload();
+		}
 	},
 	
 	cbResumeBtnHdl : function() {
@@ -444,6 +597,11 @@ Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, 
 	rateRenderer : function(val, cell, record, row, col, store) {
 		val = rate(val);
 		return val;
+	},
+	
+	timestampRenderer: function(val, cell, record, row, col, store) {
+		var renderer = OMV.util.Format.localeTimeRenderer();
+		return renderer(val);
 	}
 });
 OMV.NavigationPanelMgr.registerPanel("services", "transmissionbt", {

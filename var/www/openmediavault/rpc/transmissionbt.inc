@@ -137,14 +137,21 @@ class TransmissionBTRpc extends OMVRpc {
 				'{'.$GLOBALS['OMV_JSONSCHEMA_SORTDIR'].'}', // sortDir
 				'{"type":"array","items":{"type":"string"}}' // types
 			),
-			"delete" => array(
-				'{"type":"integer", "minimum":0}'
-			),
+			"delete" => array('{
+				"type":"object",
+				"properties":{
+					"id":{"type":"integer", "minimum":0},
+					"deleteLocalData":{"type":"boolean"}
+				}
+			}'),
 			"pause" => array(
 				'{"type":"integer", "minimum":0}'
 			),
 			"resume" => array(
 				'{"type":"integer", "minimum":0}'
+			),
+			"upload" => array(
+				'{"type":"boolean"}'
 			),
 		);
 	}
@@ -724,6 +731,9 @@ class TransmissionBTRpc extends OMVRpc {
 															'peersSendingToUs',
 															'rateDownload',
 															'rateUpload',
+															'addedDate',
+															'doneDate',
+															'uploadRatio',
 															)
 		);
 		
@@ -746,6 +756,8 @@ class TransmissionBTRpc extends OMVRpc {
 			throw new OMVException(OMVErrorMsg::E_MISC_FAILURE,
 			  "Invalid upload request");
 		}
+		//$this->validateParams(__METHOD__, func_get_args());
+		
 		// Get configuration data
 		$xpath = "//services/transmissionbt";
 		$object = $xmlConfig->get($xpath);
@@ -763,10 +775,47 @@ class TransmissionBTRpc extends OMVRpc {
 			$transmissionbt_rpc->password = $object['rpcpassword'];
 		}
 		
-		move_uploaded_file($_FILES['file']['tmp_name'], sys_get_temp_dir() . '/' . $_FILES['file']['name']);
+		$file_path = sys_get_temp_dir() . '/' . $_FILES['file']['name'];
 		
-		$torrent = $transmissionbt_rpc->add_file(sys_get_temp_dir() . '/' . $_FILES['file']['name']);
-		unlink(sys_get_temp_dir() . '/' . $_FILES['file']['name']);
+		move_uploaded_file($_FILES['file']['tmp_name'], $file_path);
+		
+		//$start_download = !array_boolval($data, 'start-download');
+		
+		$torrent = $transmissionbt_rpc->add_file($file_path, ''/*, $start_download*/);
+		unlink($file_path);
+	}
+	
+	public function delete($data) {
+//		$this->debug(var_export(func_get_args(), TRUE));
+		global $xmlConfig;
+		// Check permissions
+		$this->validateSession();
+		//if (!$this->hasRole(OMV_ROLE_ADMINISTRATOR)) {
+		//	throw new OMVException(OMVErrorMsg::E_RPC_SERVICE_INVALID_PERMISSION);
+		//}
+		$this->commitSession();
+		// Validate method parameters
+		$this->validateParams(__METHOD__, func_get_args());
+		// Get configuration data
+		$xpath = "//services/transmissionbt";
+		$object = $xmlConfig->get($xpath);
+		if (is_null($object)) {
+			throw new OMVException(OMVErrorMsg::E_CONFIG_GET_OBJECT_FAILED,
+			  $xpath);
+		}
+		
+		$transmissionbt_rpc = new TransmissionRPC();
+		$transmissionbt_rpc->return_as_array = true;
+		// Set authentication when needed
+		if (array_boolval($object, 'rpcauthenticationrequired') === true)
+		{
+			$transmissionbt_rpc->username = $object['rpcusername'];
+			$transmissionbt_rpc->password = $object['rpcpassword'];
+		}
+		
+		$transmissionbt_rpc->remove($data['id'], array_boolval($data, 'deleteLocalData'));
+		
+		return 'success';
 	}
 	
 	public function resume($id) {
@@ -779,7 +828,7 @@ class TransmissionBTRpc extends OMVRpc {
 		//}
 		$this->commitSession();
 		// Validate method parameters
-		$this->validateParams(__METHOD__, func_get_args());
+		//$this->validateParams(__METHOD__, func_get_args());
 		// Get configuration data
 		$xpath = "//services/transmissionbt";
 		$object = $xmlConfig->get($xpath);
