@@ -1,3 +1,10 @@
+openmediavault-transmissionbt (0.2.7.2) stable; urgency=low
+
+  * Removed old umask var
+  * Import SVN Changes
+  
+ -- Marcel Beck <marcel.beck@mbeck.org>  Tue, 22 Nov 2011 21:34:00 +0100
+
 openmediavault-transmissionbt (0.2.7.1) stable; urgency=low
 
   * Github Issue #13 - umask Setting
