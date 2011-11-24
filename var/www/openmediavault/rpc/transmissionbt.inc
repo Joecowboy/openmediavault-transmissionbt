@@ -62,7 +62,6 @@ class TransmissionBTRpc extends OMVRpc {
 					"incomplete-dir-enabled":{"type":"boolean"},
 					"watch-dir":{"type":"string"},
 					"watch-dir-enabled":{"type":"boolean"},
-					
 					"preallocation":{"type":"integer","enum":[0,1,2]},
 					"rename-partial-files":{"type":"boolean"},
 					"start-added-torrents":{"type":"boolean"},
@@ -77,7 +76,6 @@ class TransmissionBTRpc extends OMVRpc {
 					"speed-limit-up":{"type":"integer","minimum":0},
 					"speed-limit-up-enabled":{"type":"boolean"},
 					"upload-slots-per-torrent":{"type":"integer"},
-					
 					"alt-speed-enabled":{"type":"boolean"},
 					"alt-speed-up":{"type":"integer","minimum":0},
 					"alt-speed-down":{"type":"integer","minimum":0}
@@ -88,10 +86,8 @@ class TransmissionBTRpc extends OMVRpc {
 				"properties":{
 					"queue-stalled-enabled":{"type":"boolean"},
 					"queue-stalled-minutes":{"type":"integer","minimum":0},
-					
 					"download-queue-enabled":{"type":"boolean"},
 					"download-queue-size":{"type":"integer","minimum":0},
-					
 					"seed-queue-enabled":{"type":"boolean"},
 					"seed-queue-size":{"type":"integer","minimum":0}
 				}
@@ -104,7 +100,6 @@ class TransmissionBTRpc extends OMVRpc {
 					"peer-limit-global":{"type":"integer","minimum":0},
 					"peer-limit-per-torrent":{"type":"integer","minimum":0},
 					"peer-socket-tos":{"type":"string","enum":'.'["default","lowcost","throughput","lowdelay","reliability"]},
-					
 					"peer-port":{"type":"integer","minimum":1024,"maximum":65535},
 					"peer-port-random-low":{"type":"integer","minimum":1024,"maximum":65535},
 					"peer-port-random-high":{"type":"integer","minimum":1024,"maximum":65535},
@@ -116,13 +111,10 @@ class TransmissionBTRpc extends OMVRpc {
 				"type":"object",
 				"properties":{
 					"alt-speed-time-enabled":{"type":"boolean"},
-					
 					"begin-hour":{"type":"integer","minimum":0,"maximum":23},
 					"begin-minute":{"type":"integer","minimum":0,"maximum":59},
-					
 					"end-hour":{"type":"integer","minimum":0,"maximum":23},
 					"end-minute":{"type":"integer","minimum":0,"maximum":59},
-					
 					"days-sunday":{"type":"boolean"},
 					"days-monday":{"type":"boolean"},
 					"days-tuesday":{"type":"boolean"},
@@ -130,10 +122,8 @@ class TransmissionBTRpc extends OMVRpc {
 					"days-thursday":{"type":"boolean"},
 					"days-friday":{"type":"boolean"},
 					"days-saturday":{"type":"boolean"},
-					
 					"idle-seeding-limit":{"type":"integer","minimum":0},
 					"idle-seeding-limit-enabled":{"type":"boolean"},
-					
 					"ratio-limit":{"type":"integer","minimum":0},
 					"ratio-limit-enabled":{"type":"boolean"}
 				}
@@ -169,14 +159,12 @@ class TransmissionBTRpc extends OMVRpc {
 		$object['rpcauthenticationrequired'] = boolval($object['rpcauthenticationrequired']);
 		$object['blocklistenabled'] = boolval($object['blocklistenabled']);
 		$object['blocklistsyncenabled'] = boolval($object['blocklistsyncenabled']);
-		
 		$object['lazy-bitfield-enabled'] = boolval($object['lazy-bitfield-enabled']);
 		$object['umask'] = intval($object['umask']);
 		$object['lpd-enabled'] = boolval($object['lpd-enabled']);
 		$object['scrape-paused-torrents-enabled'] = boolval($object['scrape-paused-torrents-enabled']);
 		$object['utp-enabled'] = boolval($object['utp-enabled']);
 		$object['message-level'] = intval($object['message-level']);
-		
 		return $object;
 	}
 
@@ -194,7 +182,6 @@ class TransmissionBTRpc extends OMVRpc {
 		$this->commitSession();
 		// Validate method parameters
 		$this->validateParams(__METHOD__, func_get_args());
-		
 		// Get existing configuration object
 		$xpath = "//services/transmissionbt";
 		$oldObject = $xmlConfig->get($xpath);
@@ -202,7 +189,6 @@ class TransmissionBTRpc extends OMVRpc {
 			throw new OMVException(OMVErrorMsg::E_CONFIG_GET_OBJECT_FAILED,
 			  $xpath);
 		}
-		
 		// Prepare configuration data
 		$object = array(
 			"enable" => array_boolval($data, 'enable'),
@@ -220,7 +206,6 @@ class TransmissionBTRpc extends OMVRpc {
 			"blocklistsyncfrequency" => $data['blocklistsyncfrequency'],
 			"blocklisturl" => $data['blocklisturl'],
 			"modules" => isset($oldObject['modules']) ? $oldObject['modules'] : array(),
-			
 			"lazy-bitfield-enabled" => array_boolval($data,'lazy-bitfield-enabled'),
 			"umask" => $data['umask'],
 			"lpd-enabled" => array_boolval($data,'lpd-enabled'),
@@ -265,13 +250,11 @@ class TransmissionBTRpc extends OMVRpc {
 		// Locations
 		$object['incomplete-dir-enabled'] = boolval($object['incomplete-dir-enabled']);
 		$object['watch-dir-enabled'] = boolval($object['watch-dir-enabled']);
-		
 		// Files
 		$object['preallocation'] = intval($object['preallocation']);
 		$object['rename-partial-files'] = boolval($object['rename-partial-files']);
 		$object['start-added-torrents'] = boolval($object['start-added-torrents']);
 		$object['trash-original-torrent-files'] = boolval($object['trash-original-torrent-files']);
-		
 		return $object;
 	}
 
@@ -297,7 +280,6 @@ class TransmissionBTRpc extends OMVRpc {
 			"incomplete-dir-enabled" => $data['incomplete-dir-enabled'],
 			"watch-dir" => $data['watch-dir'],
 			"watch-dir-enabled" => $data['watch-dir-enabled'],
-			
 			// Files
 			"preallocation" => $data['preallocation'],
 			"rename-partial-files" => array_boolval($data, 'rename-partial-files'),
@@ -342,12 +324,9 @@ class TransmissionBTRpc extends OMVRpc {
 		// Speed
 		$object['speed-limit-down'] = intval($object['speed-limit-down']);
 		$object['speed-limit-down-enabled'] = boolval($object['speed-limit-down-enabled']);
-		
 		$object['speed-limit-up'] = intval($object['speed-limit-up']);
 		$object['speed-limit-up-enabled'] = boolval($object['speed-limit-up-enabled']);
-		
 		$object['upload-slots-per-torrent'] = intval($object['upload-slots-per-torrent']);
-		
 		// Turtle Mode
 		$object['alt-speed-enabled'] = boolval($object['alt-speed-enabled']);
 		$object['alt-speed-up'] = intval($object['alt-speed-up']);
@@ -378,7 +357,6 @@ class TransmissionBTRpc extends OMVRpc {
 			"speed-limit-up" => $data['speed-limit-up'],
 			"speed-limit-up-enabled" => array_boolval($data, 'speed-limit-up-enabled'),
 			"upload-slots-per-torrent" => $data['upload-slots-per-torrent'],
-			
 			// Turtle Mode
 			"alt-speed-enabled" => array_boolval($data, 'alt-speed-enabled'),
 			"alt-speed-up" => $data['alt-speed-up'],
@@ -422,11 +400,9 @@ class TransmissionBTRpc extends OMVRpc {
 		// General
 		$object['queue-stalled-enabled'] = boolval($object['queue-stalled-enabled']);
 		$object['queue-stalled-minutes'] = intval($object['queue-stalled-minutes']);
-		
 		// Download
 		$object['download-queue-enabled'] = boolval($object['download-queue-enabled']);
 		$object['download-queue-size'] = intval($object['download-queue-size']);
-		
 		// Seed
 		$object['seed-queue-enabled'] = boolval($object['seed-queue-enabled']);
 		$object['seed-queue-size'] = intval($object['seed-queue-size']);
@@ -453,11 +429,9 @@ class TransmissionBTRpc extends OMVRpc {
 			// General
 			"queue-stalled-enabled" => array_boolval($data, 'queue-stalled-enabled'),
 			"queue-stalled-minutes" => $data['queue-stalled-minutes'],
-			
 			// Download
 			"download-queue-enabled" => array_boolval($data, 'download-queue-enabled'),
 			"download-queue-size" => $data['download-queue-size'],
-			
 			// Seed
 			"seed-queue-enabled" => array_boolval($data, 'seed-queue-enabled'),
 			"seed-queue-size" => $data['seed-queue-size'],
@@ -501,14 +475,12 @@ class TransmissionBTRpc extends OMVRpc {
 		// Limits
 		$object['peer-limit-global'] = intval($object['peer-limit-global']);
 		$object['peer-limit-per-torrent'] = intval($object['peer-limit-per-torrent']);
-		
 		// Peer Ports
 		$object['peer-port'] = intval($object['peer-port']);
 		$object['peer-port-random-high'] = intval($object['peer-port-random-high']);
 		$object['peer-port-random-low'] = intval($object['peer-port-random-low']);
 		$object['peer-port-random-on-start'] = boolval($object['peer-port-random-on-start']);
 		$object['port-forwarding-enabled'] = boolval($object['port-forwarding-enabled']);
-		
 		return $object;
 	}
 
@@ -532,12 +504,10 @@ class TransmissionBTRpc extends OMVRpc {
 			// Bindings
 			"bind-address-ipv4" => $data['bind-address-ipv4'],
 			"bind-address-ipv6" => $data['bind-address-ipv6'],
-			
 			// Limits
 			"peer-limit-global" => $data['peer-limit-global'],
 			"peer-limit-per-torrent" => $data['peer-limit-per-torrent'],
 			"peer-socket-tos" => $data['peer-socket-tos'],
-			
 			// Peer Ports
 			"peer-port" => $data['peer-port'],
 			"peer-port-random-high" => $data['peer-port-random-high'],
@@ -560,7 +530,7 @@ class TransmissionBTRpc extends OMVRpc {
 		$dispatcher->notify(OMV_NOTIFY_MODIFY,
 		  "org.openmediavault.services.transmissionbt", $object);
 	}
-	
+
 	/**
 	 * Get configuration object.
 	 */
@@ -579,70 +549,49 @@ class TransmissionBTRpc extends OMVRpc {
 			throw new OMVException(OMVErrorMsg::E_CONFIG_GET_OBJECT_FAILED,
 			  $xpath);
 		}
-		
 		// Modify result data
 		// Scheduling
 		$object['alt-speed-time-enabled'] = boolval($object['alt-speed-time-enabled']);
 		$object['alt-speed-time-begin'] = intval($object['alt-speed-time-begin']);
-		
 		$object['begin-hour'] = intval($object['alt-speed-time-begin'] / 60);
 		$object['begin-minute'] = ($object['alt-speed-time-begin'] % 60);
-		
 		$object['alt-speed-time-end'] = intval($object['alt-speed-time-end']);
-		
 		$object['end-hour'] = intval($object['alt-speed-time-end'] / 60);
 		$object['end-minute'] = ($object['alt-speed-time-end'] % 60);
-		
 		$object['days-sunday'] = false;
-		if (($object['alt-speed-time-day'] & 1) === 1)
-		{
+		if (($object['alt-speed-time-day'] & 1) === 1) {
 			$object['days-sunday'] = true;
 		}
-		
 		$object['days-monday'] = false;
-		if (($object['alt-speed-time-day'] & 2) === 2)
-		{
+		if (($object['alt-speed-time-day'] & 2) === 2) {
 			$object['days-monday'] = true;
 		}
-		
 		$object['days-tuesday'] = false;
-		if (($object['alt-speed-time-day'] & 4) === 4)
-		{
+		if (($object['alt-speed-time-day'] & 4) === 4) {
 			$object['days-tuesday'] = true;
 		}
-		
 		$object['days-wednesday'] = false;
-		if (($object['alt-speed-time-day'] & 8) === 8)
-		{
+		if (($object['alt-speed-time-day'] & 8) === 8) {
 			$object['days-wednesday'] = true;
 		}
-		
 		$object['days-thursday'] = false;
-		if (($object['alt-speed-time-day'] & 16) === 16)
-		{
+		if (($object['alt-speed-time-day'] & 16) === 16) {
 			$object['days-thursday'] = true;
 		}
-		
 		$object['days-friday'] = false;
-		if (($object['alt-speed-time-day'] & 32) === 32)
-		{
+		if (($object['alt-speed-time-day'] & 32) === 32) {
 			$object['days-friday'] = true;
 		}
-		
 		$object['days-saturday'] = false;
-		if (($object['alt-speed-time-day'] & 64) === 64)
-		{
+		if (($object['alt-speed-time-day'] & 64) === 64) {
 			$object['days-saturday'] = true;
 		}
-		
 		// Idle
 		$object['idle-seeding-limit'] = intval($object['idle-seeding-limit']);
 		$object['idle-seeding-limit-enabled'] = boolval($object['idle-seeding-limit-enabled']);
-		
 		// Ratio
 		$object['ratio-limit'] = floatval($object['ratio-limit']);
 		$object['ratio-limit-enabled'] = boolval($object['ratio-limit-enabled']);
-		
 		return $object;
 	}
 
@@ -660,52 +609,37 @@ class TransmissionBTRpc extends OMVRpc {
 		$this->commitSession();
 		// Validate method parameters
 		$this->validateParams(__METHOD__, func_get_args());
-		
 		$data['alt-speed-time-day'] = 0;
-		
-		if (array_boolval($data, 'days-sunday') === true)
-		{
+		if (array_boolval($data, 'days-sunday') === true) {
 			$data['alt-speed-time-day'] += 1;
 		}
-		if (array_boolval($data, 'days-monday') === true)
-		{
+		if (array_boolval($data, 'days-monday') === true) {
 			$data['alt-speed-time-day'] += 2;
 		}
-		if (array_boolval($data, 'days-tuesday') === true)
-		{
+		if (array_boolval($data, 'days-tuesday') === true) {
 			$data['alt-speed-time-day'] += 4;
 		}
-		if (array_boolval($data, 'days-wednesday') === true)
-		{
+		if (array_boolval($data, 'days-wednesday') === true) {
 			$data['alt-speed-time-day'] += 8;
 		}
-		if (array_boolval($data, 'days-thursday') === true)
-		{
+		if (array_boolval($data, 'days-thursday') === true) {
 			$data['alt-speed-time-day'] += 16;
 		}
-		if (array_boolval($data, 'days-friday') === true)
-		{
+		if (array_boolval($data, 'days-friday') === true) {
 			$data['alt-speed-time-day'] += 32;
 		}
-		if (array_boolval($data, 'days-saturday') === true)
-		{
+		if (array_boolval($data, 'days-saturday') === true) {
 			$data['alt-speed-time-day'] += 64;
 		}
 		// Prepare configuration data
 		$object = array(
 			'alt-speed-time-enabled' => array_boolval($data, 'alt-speed-time-enabled'),
-			
-			
 			'alt-speed-time-begin' => intval(($data['begin-hour'] * 60) + $data['begin-minute']),
 			'alt-speed-time-end' => intval(($data['end-hour'] * 60) + $data['end-minute']),
-			
 			'alt-speed-time-day' => $data['alt-speed-time-day'],
-			
-			
 			// Idle
 			'idle-seeding-limit' => $data['idle-seeding-limit'],
 			'idle-seeding-limit-enabled' => array_boolval($data, 'idle-seeding-limit-enabled'),
-			
 			// Ratio
 			'ratio-limit' => $data['ratio-limit'],
 			'ratio-limit-enabled' => array_boolval($data, 'ratio-limit-enabled'),
