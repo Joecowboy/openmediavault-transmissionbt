@@ -600,8 +600,10 @@ Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, 
 	},
 	
 	timestampRenderer: function(val, cell, record, row, col, store) {
-		var renderer = OMV.util.Format.localeTimeRenderer();
-		return renderer(val);
+		if (val <= 0)
+			return;
+		var dt = Date.parseDate(val, "U");
+		return Ext.util.Format.date(dt, 'Y-m-d H:i:s');
 	}
 });
 OMV.NavigationPanelMgr.registerPanel("services", "transmissionbt", {
