@@ -49,6 +49,12 @@ OMV.Module.Services.TransmissionBTSettingsPanel = function(config) {
 	  this, initialConfig);
 };
 Ext.extend(OMV.Module.Services.TransmissionBTSettingsPanel, OMV.FormPanelExt, {
+	initComponent : function() {
+		OMV.Module.Services.TransmissionBTSettingsPanel.superclass.
+		  initComponent.apply(this, arguments);
+		this.on("load", this._updateFormFields, this);
+	},
+
 	getFormItems : function() {
 		return [{
 			xtype: "fieldset",
@@ -285,6 +291,7 @@ Ext.extend(OMV.Module.Services.TransmissionBTSettingsPanel, OMV.FormPanelExt, {
 			}]
 		}];
 	},
+
 	/**
 	 * Private function to update the states of various form fields.
 	 */
@@ -455,7 +462,7 @@ Ext.extend(OMV.Module.Services.TransmissionBTPeerPanel, OMV.FormPanelExt, {
 				allowDecimals: false,
 				allowNegative: false,
 				allowBlank: false,
-				value: 1024,
+				value: 1024
 			},{
 				xtype: "numberfield",
 				name: "peer-port-random-high",
@@ -466,7 +473,7 @@ Ext.extend(OMV.Module.Services.TransmissionBTPeerPanel, OMV.FormPanelExt, {
 				allowDecimals: false,
 				allowNegative: false,
 				allowBlank: false,
-				value: 65535,
+				value: 65535
 			},{
 				xtype: "checkbox",
 				name: "port-forwarding-enabled",
