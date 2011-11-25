@@ -692,16 +692,6 @@ Ext.extend(OMV.Module.Services.TransmissionBTBandwidthPanel, OMV.FormPanelExt, {
 				boxLabel: "Enable Turtle Mode."
 			},{
 				xtype: "numberfield",
-				name: "alt-speed-up",
-				fieldLabel: "Upload",
-				allowDecimals: false,
-				allowNegative: false,
-				allowBlank: false,
-				value: 50,
-				plugins: [ OMV.form.plugins.FieldInfo ],
-				infoText: "Turtle Mode upload speed. Value is kb/s."
-			},{
-				xtype: "numberfield",
 				name: "alt-speed-down",
 				fieldLabel: "Download",
 				allowDecimals: false,
@@ -710,6 +700,16 @@ Ext.extend(OMV.Module.Services.TransmissionBTBandwidthPanel, OMV.FormPanelExt, {
 				value: 50,
 				plugins: [ OMV.form.plugins.FieldInfo ],
 				infoText: "Turtle Mode download speed. Value is kb/s."
+			},{
+				xtype: "numberfield",
+				name: "alt-speed-up",
+				fieldLabel: "Upload",
+				allowDecimals: false,
+				allowNegative: false,
+				allowBlank: false,
+				value: 50,
+				plugins: [ OMV.form.plugins.FieldInfo ],
+				infoText: "Turtle Mode upload speed. Value is kb/s."
 			}]
 		}];
 	}
