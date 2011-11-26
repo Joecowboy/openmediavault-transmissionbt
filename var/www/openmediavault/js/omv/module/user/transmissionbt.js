@@ -123,7 +123,9 @@ OMV.Module.Services.TransmissionBTGridPanel = function(config) {
 				header: "Ratio",
 				sortable: true,
 				dataIndex: "uploadRatio",
-				id: "uploadRatio"
+				id: "uploadRatio",
+				renderer: this.ratioRenderer,
+				scope: this
 			}]
 		})
 	};
@@ -620,6 +622,19 @@ Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, 
 			return;
 		var dt = Date.parseDate(val, "U");
 		return Ext.util.Format.date(dt, 'Y-m-d H:i:s');
+	},
+	
+	ratioRenderer: function(val, cell, record, row, col, store) {
+		switch (val)
+		{
+			case -1:
+				val = "Not available";
+				break;
+			case -2:
+				val = "Infinite";
+				break;
+		}
+		return val;
 	}
 });
 OMV.NavigationPanelMgr.registerPanel("services", "transmissionbtm", {
