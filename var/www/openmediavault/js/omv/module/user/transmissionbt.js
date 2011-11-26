@@ -197,7 +197,7 @@ Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, 
 		tbar.insert(3, {
 			id: this.getId() + "-pause",
 			xtype: "button",
-			text: "pause",
+			text: "Pause",
 			icon: "images/transmissionbt_pause.png",
 			handler: this.cbPauseBtnHdl,
 			scope: this,
@@ -213,6 +213,37 @@ Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, 
 			disabled: true
 		});
 		return tbar;
+	},
+	
+	listeners: {
+		'rowcontextmenu' : function(grid, index, event) {
+			this.contextMenu(grid, index, event);
+		}
+	},
+	
+	contextMenu : function(grid, index, event) {
+		event.stopEvent();
+		var records = new Array(grid.getStore().getAt(index));
+		var sm = this.getSelectionModel();
+		sm.selectRow(index);
+		var menu = new Ext.menu.Menu({
+			items: [{
+				text: "Delete",
+				handler: function() {
+					grid.startDelete(sm, records);
+				}
+			},{
+				text: "Pause",
+				handler: function() {
+					grid.startPause(sm, records);
+				}
+			},{
+				text: "Resume",
+				handler: function() {
+					grid.startResume(sm, records);
+				}
+			}]
+		}).showAt(event.xy);
 	},
 
 	cbSelectionChangeHdl : function(model) {
