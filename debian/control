@@ -6,6 +6,7 @@ Maintainer: Volker Theile <volker.theile@openmediavault.org>
 Build-Depends: debhelper (>> 7)
 Standards-Version: 3.6.10
 Homepage: http://www.openmediavault.org
+ http://packages.omv-plugins.org/
  https://github.com/OMV-Plugins/openmediavault-transmissionbt
 
 Package: openmediavault-transmissionbt
