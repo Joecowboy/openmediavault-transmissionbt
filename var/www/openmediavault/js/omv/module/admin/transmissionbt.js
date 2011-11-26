@@ -25,6 +25,7 @@
 // require("js/omv/form/PasswordField.js")
 // require("js/omv/form/SharedFolderComboBox.js")
 // require("js/omv/form/plugins/FieldInfo.js")
+// require("js/omv/module/user/transmissionbt.js")
 
 Ext.ns("OMV.Module.Services");
 

@@ -32,8 +32,8 @@
 Ext.ns("OMV.Module.Services");
 
 // Register the menu.
-OMV.NavigationPanelMgr.registerMenu("services", "transmissionbt", {
-	text: "BitTorrent",
+OMV.NavigationPanelMgr.registerMenu("services", "transmissionbtm", {
+	text: "BitTorrent Manage",
 	icon: "images/transmissionbt.png"
 });
 
@@ -236,30 +236,40 @@ Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, 
 			var status = parseInt(record.get("status"));
 			switch (status)
 			{
-				case 1:
-					tbarDeleteCtrl.enable();
-					tbarPauseCtrl.enable();
-					tbarResumeCtrl.disable();
-					break;
-				case 2:
-					tbarDeleteCtrl.enable();
-					tbarPauseCtrl.enable();
-					tbarResumeCtrl.disable();
-					break;
-				case 4:
-					tbarDeleteCtrl.enable();
-					tbarPauseCtrl.enable();
-					tbarResumeCtrl.disable();
-					break;
-				case 8:
-					tbarDeleteCtrl.enable();
-					tbarPauseCtrl.enable();
-					tbarResumeCtrl.disable();
-					break;
-				case 16:
+				case 0: /* Torrent is stopped */
 					tbarDeleteCtrl.enable();
 					tbarPauseCtrl.disable();
 					tbarResumeCtrl.enable();
+					break;
+				case 1: /* Queued to check files */
+					tbarDeleteCtrl.enable();
+					tbarPauseCtrl.enable();
+					tbarResumeCtrl.disable();
+					break;
+				case 2: /* Checking files */
+					tbarDeleteCtrl.enable();
+					tbarPauseCtrl.enable();
+					tbarResumeCtrl.disable();
+					break;
+				case 3: /* Queued to download */
+					tbarDeleteCtrl.enable();
+					tbarPauseCtrl.enable();
+					tbarResumeCtrl.disable();
+					break;
+				case 4: /* Downloading */
+					tbarDeleteCtrl.enable();
+					tbarPauseCtrl.enable();
+					tbarResumeCtrl.disable();
+					break;
+				case 5: /* Queued to seed */
+					tbarDeleteCtrl.enable();
+					tbarPauseCtrl.enable();
+					tbarResumeCtrl.disable();
+					break;
+				case 6: /* Seeding */
+					tbarDeleteCtrl.enable();
+					tbarPauseCtrl.enable();
+					tbarResumeCtrl.disable();
 					break;
 				default:
 					break;
@@ -548,23 +558,29 @@ Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, 
 	
 	statusRenderer : function(val, cell, record, row, col, store) {
 		switch (val) {
+		case 0:
+			val = "Torrent is stopped";
+			break;
 		case 1:
-			val = "Waiting in queue to check files";
+			val = "Queued to check files";
 			break;
 		case 2:
 			val = "Checking files";
 			break;
+		case 3:
+			val = "Queued to download";
+			break;
 		case 4:
 			val = "Downloading";
 			break;
-		case 8:
+		case 5:
+			val = "Queued to seed";
+			break;
+		case 6:
 			val = "Seeding";
 			break;
-		case 16:
-			val = "Torrent is stopped";
-			break;
 		default:
-			val = "Missing: " + val;
+			val = "Missing Status: " + val;
 			break;
 		}
 		return val;
@@ -606,7 +622,7 @@ Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, 
 		return Ext.util.Format.date(dt, 'Y-m-d H:i:s');
 	}
 });
-OMV.NavigationPanelMgr.registerPanel("services", "transmissionbt", {
+OMV.NavigationPanelMgr.registerPanel("services", "transmissionbtm", {
 	cls: OMV.Module.Services.TransmissionBTGridPanel
 });
 
@@ -619,29 +635,28 @@ function bytesToSize (bytes) {
 
 function timeInterval (seconds)
 {
-	var days    = Math.floor (seconds / 86400),
+	var weeks    = Math.floor (seconds / 604800),
+		days    = Math.floor ((seconds % 604800) / 86400),
 		hours   = Math.floor ((seconds % 86400) / 3600),
 		minutes = Math.floor ((seconds % 3600) / 60),
 		seconds = Math.floor (seconds % 60),
-		d = days    + ' ' + (days    > 1 ? 'days'    : 'day'),
-		h = hours   + ' ' + (hours   > 1 ? 'hours'   : 'hour'),
-		m = minutes + ' ' + (minutes > 1 ? 'minutes' : 'minute'),
-		s = seconds + ' ' + (seconds > 1 ? 'seconds' : 'second');
+		w = weeks   + 'w',
+		d = days    + 'd',
+		h = hours   + 'h',
+		m = minutes + 'm',
+		s = seconds + 's';
 
+	if (weeks) {
+		return w + ' ' + d;
+	}
 	if (days) {
-		if (days >= 4 || !hours)
-			return d;
-		return d + ', ' + h;
+		return d + ' ' + h;
 	}
 	if (hours) {
-		if (hours >= 4 || !minutes)
-			return h;
-		return h + ', ' + m;
+		return h + ' ' + m;
 	}
 	if (minutes) {
-		if (minutes >= 4 || !seconds)
-			return m;
-		return m + ', ' + s;
+		return m + ' ' + s;
 	}
 	return s;
 };
