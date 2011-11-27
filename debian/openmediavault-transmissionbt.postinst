@@ -6,6 +6,7 @@
 # @author    Volker Theile <volker.theile@openmediavault.org>
 # @author    Marcel Beck <marcel.beck@mbeck.org>
 # @copyright Copyright (c) 2009-2011 Volker Theile
+# @copyright Copyright (c) 2011 Marcel Beck
 #
 # OpenMediaVault is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -215,6 +216,19 @@ case "$1" in
 		# transmission-daemon package.
 		########################################################################
 		omv_config_import_group "debian-transmission"
+		
+		echo "Write Config"
+		omv-mkconf transmissionbt 2>&1
+		
+		if [ "$(omv_config_get "//services/transmissionbt/enable")" = "0" ]; then
+			echo "Updating init script links and actions"
+			invoke-rc.d --force transmission-daemon stop
+			update-rc.d transmission-daemon disable &>/dev/null
+		else
+			echo "Updating init script links and actions"
+			invoke-rc.d --force transmission-daemon restart
+			update-rc.d transmission-daemon enable &>/dev/null
+		fi
 	;;
 
 	abort-upgrade|abort-remove|abort-deconfigure)
