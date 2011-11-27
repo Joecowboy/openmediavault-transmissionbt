@@ -1,8 +1,9 @@
-openmediavault-transmissionbt (0.2.8.0.1) stable; urgency=low
+openmediavault-transmissionbt (0.2.8.1) stable; urgency=low
 
+  * Github Issue #22 - Dont restart transmission-daemon after update, only config update is needed
   * Github Issue #23 - Add Queue Managment
 
- -- Marcel Beck <marcel.beck@mbeck.org>  Sun, 27 Nov 2011 21:58:23 +0100
+ -- Marcel Beck <marcel.beck@mbeck.org>  Sun, 27 Nov 2011 23:25:44 +0100
 
 openmediavault-transmissionbt (0.2.8) stable; urgency=low
 
