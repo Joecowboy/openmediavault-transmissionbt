@@ -214,13 +214,13 @@ Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, 
 		});
 		return tbar;
 	},
-	
+
 	listeners: {
 		'rowcontextmenu' : function(grid, index, event) {
 			this.contextMenu(grid, index, event);
 		}
 	},
-	
+
 	contextMenu : function(grid, index, event) {
 		event.stopEvent();
 		var records = new Array(grid.getStore().getAt(index));
@@ -228,16 +228,19 @@ Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, 
 		sm.selectRow(index);
 		var menu = new Ext.menu.Menu({
 			items: [{
+				id: this.getId() + "-menu-delete",
 				text: "Delete",
 				handler: function() {
 					grid.startDelete(sm, records);
 				}
 			},{
+				id: this.getId() + "-menu-pause",
 				text: "Pause",
 				handler: function() {
 					grid.startPause(sm, records);
 				}
 			},{
+				id: this.getId() + "-menu-resume",
 				text: "Resume",
 				handler: function() {
 					grid.startResume(sm, records);
@@ -250,13 +253,14 @@ Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, 
 		OMV.Module.Services.TransmissionBTGridPanel.superclass.cbSelectionChangeHdl.apply(this, arguments);
 		// Process additional buttons
 		this.toggleButtons();
+		this.toggleContextMenu();
 	},
-	
+
 	toggleButtons : function()
 	{
 		var sm = this.getSelectionModel();
 		var records = sm.getSelections();
-	
+
 		var tbarDeleteCtrl = this.getTopToolbar().findById(this.getId() + "-delete");
 		var tbarPauseCtrl = this.getTopToolbar().findById(this.getId() + "-pause");
 		var tbarResumeCtrl = this.getTopToolbar().findById(this.getId() + "-resume");
@@ -313,7 +317,70 @@ Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, 
 			tbarResumeCtrl.enable();
 		}
 	},
-	
+
+	toggleContextMenu : function()
+	{
+		var sm = this.getSelectionModel();
+		var records = sm.getSelections();
+
+		var menuItemDeleteCtrl = this.getTopToolbar().findById(this.getId() + "-menu-delete");
+		var menuItemPauseCtrl = this.getTopToolbar().findById(this.getId() + "-menu-pause");
+		var menuItemResumeCtrl = this.getTopToolbar().findById(this.getId() + "-menu-resume");
+
+		if (records.length <= 0) {
+			menuItemDeleteCtrl.disable();
+			menuItemPauseCtrl.disable();
+			menuItemResumeCtrl.disable();
+		} else if (records.length == 1) {
+			var record = records.pop();
+			var status = parseInt(record.get("status"));
+			switch (status)
+			{
+				case 0: /* Torrent is stopped */
+					menuItemDeleteCtrl.enable();
+					menuItemPauseCtrl.disable();
+					menuItemResumeCtrl.enable();
+					break;
+				case 1: /* Queued to check files */
+					menuItemDeleteCtrl.enable();
+					menuItemPauseCtrl.enable();
+					menuItemResumeCtrl.disable();
+					break;
+				case 2: /* Checking files */
+					menuItemDeleteCtrl.enable();
+					menuItemPauseCtrl.enable();
+					menuItemResumeCtrl.disable();
+					break;
+				case 3: /* Queued to download */
+					menuItemDeleteCtrl.enable();
+					menuItemPauseCtrl.enable();
+					menuItemResumeCtrl.disable();
+					break;
+				case 4: /* Downloading */
+					menuItemDeleteCtrl.enable();
+					menuItemPauseCtrl.enable();
+					menuItemResumeCtrl.disable();
+					break;
+				case 5: /* Queued to seed */
+					menuItemDeleteCtrl.enable();
+					menuItemPauseCtrl.enable();
+					menuItemResumeCtrl.disable();
+					break;
+				case 6: /* Seeding */
+					menuItemDeleteCtrl.enable();
+					menuItemPauseCtrl.enable();
+					menuItemResumeCtrl.disable();
+					break;
+				default:
+					break;
+			}
+		} else {
+			menuItemDeleteCtrl.enable();
+			menuItemPauseCtrl.enable();
+			menuItemResumeCtrl.enable();
+		}
+	},
+
 	/**
 	 * @method doReload
 	 * Reload the grid content.
@@ -322,13 +389,14 @@ Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, 
 		if (this.mode === "remote") {
 			this.store.reload();
 			this.toggleButtons();
+			this.toggleContextMenu();
 		}
 	},
-	
+
 	cbReloadBtnHdl : function() {
 		this.doReload();
 	},
-	
+
 	cbUploadBtnHdl : function() {
 		var wnd = new OMV.TransmissionBT.UploadDialog({
 			title: "Upload torrent",
@@ -345,7 +413,7 @@ Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, 
 		});
 		wnd.show();
 	},
-	
+
 	cbDeleteBtnHdl : function() {
 		var selModel = this.getSelectionModel();
 		var records = selModel.getSelections();
@@ -363,7 +431,7 @@ Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, 
 		});
 		wnd.show();
 	},
-	
+
 	startDelete: function(model, records, delete_local_data) {
 		if (records.length <= 0)
 			return;
@@ -380,13 +448,13 @@ Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, 
 		// Execute deletion function
 		this.doDelete(record, delete_local_data);
 	},
-	
+
 	doDelete : function(record, delete_local_data) {
 		OMV.Ajax.request(this.cbDeleteHdl, this, "TransmissionBT", "delete", [{ id:  record.get("id"), deleteLocalData: delete_local_data }] );
-		
-		
+
+
 	},
-	
+
 	updateDeleteProgress : function() {
 		// Calculate percentage
 		var p = (this.deleteActionInfo.count - this.deleteActionInfo.records.length) /
@@ -396,7 +464,7 @@ Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, 
 		// Update progress dialog
 		OMV.MessageBox.updateProgress(p, text);
 	},
-	
+
 	cbDeleteHdl : function(id, response, error) {
 		if (error !== null) {
 			// Remove temporary local variables
@@ -422,20 +490,20 @@ Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, 
 			}
 		}
 	},
-	
+
 	afterDelete : function() {
 		if (this.mode === "remote") {
 			this.doReload();
 		}
 	},
-	
+
 	cbResumeBtnHdl : function() {
 		var selModel = this.getSelectionModel();
 		var records = selModel.getSelections();
-		
+
 		this.startResume(selModel, records);
 	},
-	
+
 	startResume: function(model, records) {
 		if (records.length <= 0)
 			return;
@@ -452,12 +520,12 @@ Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, 
 		// Execute deletion function
 		this.doResume(record);
 	},
-	
+
 	doResume : function(record) {
 		OMV.Ajax.request(this.cbResumeHdl, this, "TransmissionBT", "resume", [ record.get("id") ]);
 		//cbResumeHdl(null, null, null);
 	},
-	
+
 	updateResumeProgress : function() {
 		// Calculate percentage
 		var p = (this.resumeActionInfo.count - this.resumeActionInfo.records.length) /
@@ -467,7 +535,7 @@ Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, 
 		// Update progress dialog
 		OMV.MessageBox.updateProgress(p, text);
 	},
-	
+
 	cbResumeHdl : function(id, response, error) {
 		if (error !== null) {
 			// Remove temporary local variables
@@ -493,20 +561,20 @@ Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, 
 			}
 		}
 	},
-	
+
 	afterResume : function() {
 		if (this.mode === "remote") {
 			this.doReload();
 		}
 	},
-	
+
 	cbPauseBtnHdl : function() {
 		var selModel = this.getSelectionModel();
 		var records = selModel.getSelections();
-		
+
 		this.startPause(selModel, records);
 	},
-	
+
 	startPause: function(model, records) {
 		if (records.length <= 0)
 			return;
@@ -523,11 +591,11 @@ Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, 
 		// Execute deletion function
 		this.doPause(record);
 	},
-	
+
 	doPause : function(record) {
 		OMV.Ajax.request(this.cbPauseHdl, this, "TransmissionBT", "pause", [ record.get("id") ]);
 	},
-	
+
 	updatePauseProgress : function() {
 		// Calculate percentage
 		var p = (this.pauseActionInfo.count - this.pauseActionInfo.records.length) /
@@ -537,7 +605,7 @@ Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, 
 		// Update progress dialog
 		OMV.MessageBox.updateProgress(p, text);
 	},
-	
+
 	cbPauseHdl : function(id, response, error) {
 		if (error !== null) {
 			// Remove temporary local variables
@@ -563,18 +631,18 @@ Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, 
 			}
 		}
 	},
-	
+
 	afterPause : function() {
 		if (this.mode === "remote") {
 			this.doReload();
 		}
 	},
-	
+
 	doneRenderer : function(val, cell, record, row, col, store) {
 		var percentage = parseFloat(record.get("percentDone"));
 		var totalSize = parseInt(record.get("totalSize"));
 		var haveValid = parseInt(record.get("haveValid"));
-		
+
 		if (-1 == percentage) {
 			return val;
 		}
@@ -588,7 +656,7 @@ Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, 
 		}).defer(25)
 		return '<div id="' + id + '"></div>';
 	},
-	
+
 	statusRenderer : function(val, cell, record, row, col, store) {
 		switch (val) {
 		case 0:
@@ -618,7 +686,7 @@ Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, 
 		}
 		return val;
 	},
-	
+
 	etaRenderer : function(val, cell, record, row, col, store) {
 		switch (val) {
 		case -1:
@@ -633,28 +701,28 @@ Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, 
 		}
 		return val;
 	},
-	
+
 	peersRenderer : function(val, cell, record, row, col, store) {
 		var peersConnected = parseInt(record.get("peersConnected"));
 		var peersSendingToUs = parseInt(record.get("peersSendingToUs"));
-		
+
 		val = peersSendingToUs + ' / ' + peersConnected;
-		
+
 		return val;
 	},
-	
+
 	rateRenderer : function(val, cell, record, row, col, store) {
 		val = rate(val);
 		return val;
 	},
-	
+
 	timestampRenderer: function(val, cell, record, row, col, store) {
 		if (val <= 0)
 			return;
 		var dt = Date.parseDate(val, "U");
 		return Ext.util.Format.date(dt, 'Y-m-d H:i:s');
 	},
-	
+
 	ratioRenderer: function(val, cell, record, row, col, store) {
 		switch (val)
 		{
