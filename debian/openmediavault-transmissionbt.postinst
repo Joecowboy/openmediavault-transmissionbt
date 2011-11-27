@@ -227,7 +227,8 @@ case "$1" in
 		else
 			echo "Updating init script links and actions"
 			pkill -HUP transmission-da
-			if [ "$?" -ne "0" ]; then
+			RETVAL=$?
+			if [ $RETVAL -ne 0 ]; then
   			invoke-rc.d --force transmission-daemon start
 			fi
 			update-rc.d transmission-daemon enable &>/dev/null
