@@ -1,4 +1,4 @@
-openmediavault-transmissionbt (0.2.8.1) stable; urgency=low
+openmediavault-transmissionbt (0.2.8.2) stable; urgency=low
 
   * Github Issue #26 - Upgrade Problem from <0.2.8 to >=0.2.8
 
