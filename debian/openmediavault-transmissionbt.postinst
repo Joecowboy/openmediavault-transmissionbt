@@ -229,7 +229,7 @@ case "$1" in
 			echo "Updating init script links and actions"
 			echo "Reloading configuration"
 			trap "invoke-rc.d --force transmission-daemon start" EXIT
-			pkill -HUP transmission-da
+			pkill -HUP transmission-da &>/dev/null
 			trap - EXIT
 			update-rc.d transmission-daemon enable &>/dev/null
 		fi

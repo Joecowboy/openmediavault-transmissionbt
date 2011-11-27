@@ -1,3 +1,9 @@
+openmediavault-transmissionbt (0.2.8.3) stable; urgency=low
+
+  * Fixed Trap
+
+ -- Marcel Beck <marcel.beck@mbeck.org>  Mon, 28 Nov 2011 00:26:00 +0100
+
 openmediavault-transmissionbt (0.2.8.2) stable; urgency=low
 
   * Github Issue #26 - Upgrade Problem from <0.2.8 to >=0.2.8
