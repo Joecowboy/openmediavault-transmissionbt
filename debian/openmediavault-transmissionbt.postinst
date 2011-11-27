@@ -216,9 +216,17 @@ case "$1" in
 		########################################################################
 		omv_config_import_group "debian-transmission"
 		
+		echo "Write Config"
+		omv-mkconf transmissionbt 2>&1
+		
 		if [ "$(omv_config_get "//services/transmissionbt/enable")" = "1" ]; then
-			echo "Restarting transmission-daemon"
-			invoke-rc.d --quiet transmission-daemon restart
+			echo "Updating init script links and actions"
+			invoke-rc.d --force transmission-daemon stop
+			update-rc.d transmission-daemon disable &>/dev/null
+		else
+			echo "Updating init script links and actions"
+			invoke-rc.d --force transmission-daemon restart
+			update-rc.d transmission-daemon enable
 		fi
 	;;
 
