@@ -571,7 +571,7 @@ Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, 
 	},
 	
 	doneRenderer : function(val, cell, record, row, col, store) {
-		var percentage = parseInt(record.get("percentDone"));
+		var percentage = parseFloat(record.get("percentDone"));
 		var totalSize = parseInt(record.get("totalSize"));
 		var haveValid = parseInt(record.get("haveValid"));
 		
@@ -582,8 +582,8 @@ Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, 
 		(function(){
 			new Ext.ProgressBar({
 				renderTo: id,
-				value: percentage / 100,
-				text: bytesToSize(haveValid) + '/' + bytesToSize(totalSize) + ' (' + percentage + '%)'
+				value: percentage,
+				text: bytesToSize(haveValid) + '/' + bytesToSize(totalSize) + ' (' + parseInt(percentage * 100) + '%)'
 			});
 		}).defer(25)
 		return '<div id="' + id + '"></div>';
