@@ -1,3 +1,10 @@
+openmediavault-transmissionbt (0.2.7.4) stable; urgency=low
+
+  * Github Issue #19 - Bandwith - Turtle Mode Switch Upload/Download
+  * Github Issue #18 - Force new transmission-daemon
+  
+ -- Marcel Beck <marcel.beck@mbeck.org>  Sun, 27 Nov 2011 19:07:07 +0100
+
 openmediavault-transmissionbt (0.2.7.3) stable; urgency=low
 
   * Keep Windows IE 7 compatibility.
