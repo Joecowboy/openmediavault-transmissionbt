@@ -1,4 +1,4 @@
-openmediavault-transmissionbt (0.2.7.4) stable; urgency=low
+openmediavault-transmissionbt (0.2.8) stable; urgency=low
 
   * Github Issue #19 - Bandwith - Turtle Mode Switch Upload/Download
   * Github Issue #18 - Force new transmission-daemon
