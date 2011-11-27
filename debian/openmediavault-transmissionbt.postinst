@@ -222,13 +222,15 @@ case "$1" in
 
 		if [ "$(omv_config_get "//services/transmissionbt/enable")" = "0" ]; then
 			echo "Updating init script links and actions"
+			echo "Stopping transmission-daemon"
 			invoke-rc.d --force transmission-daemon stop
 			update-rc.d transmission-daemon disable &>/dev/null
 		else
 			echo "Updating init script links and actions"
-			if ! pkill -HUP transmission-da; then
-  			invoke-rc.d --force transmission-daemon start
-			fi
+			echo "Reloading configuration"
+			trap "invoke-rc.d --force transmission-daemon start" EXIT
+			pkill -HUP transmission-da
+			trap - EXIT
 			update-rc.d transmission-daemon enable &>/dev/null
 		fi
 	;;
