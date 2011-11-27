@@ -732,6 +732,7 @@ class TransmissionBTRpc extends OMVRpc {
 															'addedDate',
 															'doneDate',
 															'uploadRatio',
+															'queuePosition',
 															)
 		);
 

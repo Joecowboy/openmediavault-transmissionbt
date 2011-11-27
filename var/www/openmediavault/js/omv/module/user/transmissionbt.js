@@ -52,6 +52,7 @@ OMV.Module.Services.TransmissionBTGridPanel = function(config) {
 		resumeWaitMsg: "Resuming selected item(s)",
 		pauseWaitMsg: "Pausing selected item(s)",
 		deleteWaitMsg: "Deleting selected item(s)",
+		queueMoveWaitMsg: "Queue moving selcted item(s)",
 		stateId: "cb44cbf3-b1cb-b6ba-13548ab0dc7c246c",
 		colModel: new Ext.grid.ColumnModel({
 			columns: [{
@@ -126,6 +127,11 @@ OMV.Module.Services.TransmissionBTGridPanel = function(config) {
 				id: "uploadRatio",
 				renderer: this.ratioRenderer,
 				scope: this
+			},{
+				header: "Queue",
+				sortable: true,
+				dataIndex: "queuePosition",
+				id: "queuePosition"
 			}]
 		})
 	};
@@ -158,7 +164,8 @@ Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, 
 					{ name: "rateUpload" },
 					{ name: "addedDate" },
 					{ name: "doneDate" },
-					{ name: "uploadRatio" }
+					{ name: "uploadRatio" },
+					{ name: "queuePosition" }
     			]
 			})
 		});
@@ -245,6 +252,30 @@ Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, 
 				handler: function() {
 					grid.startResume(sm, records);
 				}
+			},{
+				id: this.getId() + "-menu-queue-top",
+				text: "Queue Move Top",
+				handler: function() {
+					grid.queueMove(sm, records, 'top');
+				}
+			},{
+				id: this.getId() + "-menu-queue-up",
+				text: "Queue Move Up",
+				handler: function() {
+					grid.queueMove(sm, records, 'up');
+				}
+			},{
+				id: this.getId() + "-menu-queue-down",
+				text: "Queue Move Down",
+				handler: function() {
+					grid.queueMove(sm, records, 'down');
+				}
+			},{
+				id: this.getId() + "-menu-queue-bottom",
+				text: "Queue Move Bottom",
+				handler: function() {
+					grid.queueMove(sm, records, 'bottom');
+				}
 			}]
 		}).showAt(event.xy);
 	},
@@ -264,6 +295,7 @@ Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, 
 		var tbarDeleteCtrl = this.getTopToolbar().findById(this.getId() + "-delete");
 		var tbarPauseCtrl = this.getTopToolbar().findById(this.getId() + "-pause");
 		var tbarResumeCtrl = this.getTopToolbar().findById(this.getId() + "-resume");
+
 		if (records.length <= 0) {
 			tbarDeleteCtrl.disable();
 			tbarPauseCtrl.disable();
@@ -327,11 +359,30 @@ Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, 
 		var menuItemPauseCtrl = this.getTopToolbar().findById(this.getId() + "-menu-pause");
 		var menuItemResumeCtrl = this.getTopToolbar().findById(this.getId() + "-menu-resume");
 
+		/* Queue Menu Items */
+		var menuItemQueueTopCtrl = this.getTopToolbar().findById(this.getId() + "-menu-queue-top");
+		var menuItemQueueUpCtrl = this.getTopToolbar().findById(this.getId() + "-menu-queue-up");
+		var menuItemQueueDownCtrl = this.getTopToolbar().findById(this.getId() + "-menu-queue-down");
+		var menuItemQueueBottomCtrl = this.getTopToolbar().findById(this.getId() + "-menu-queue-bottom");
+
 		if (records.length <= 0) {
 			menuItemDeleteCtrl.disable();
 			menuItemPauseCtrl.disable();
 			menuItemResumeCtrl.disable();
+
+			/* Queue Menu Items */
+			menuItemQueueTopCtrl.disable();
+			menuItemQueueUpCtrl.disable();
+			menuItemQueueDownCtrl.disable();
+			menuItemQueueBottomCtrl.disable();
 		} else if (records.length == 1) {
+
+			/* Queue Menu Items */
+			menuItemQueueTopCtrl.enable();
+			menuItemQueueUpCtrl.enable();
+			menuItemQueueDownCtrl.enable();
+			menuItemQueueBottomCtrl.enable();
+
 			var record = records.pop();
 			var status = parseInt(record.get("status"));
 			switch (status)
@@ -378,6 +429,12 @@ Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, 
 			menuItemDeleteCtrl.enable();
 			menuItemPauseCtrl.enable();
 			menuItemResumeCtrl.enable();
+
+			/* Queue Menu Items */
+			menuItemQueueTopCtrl.enable();
+			menuItemQueueUpCtrl.enable();
+			menuItemQueueDownCtrl.enable();
+			menuItemQueueBottomCtrl.enable();
 		}
 	},
 
@@ -406,7 +463,7 @@ Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, 
 				success: function(wnd, response) {
 					// The upload was successful, now resynchronize the
 					// package index files from their sources.
-					this.cbReloadBtnHdl();
+					this.doReload();
 				},
 				scope: this
 			}
@@ -414,6 +471,7 @@ Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, 
 		wnd.show();
 	},
 
+	/* DELETION HANDLER */
 	cbDeleteBtnHdl : function() {
 		var selModel = this.getSelectionModel();
 		var records = selModel.getSelections();
@@ -431,7 +489,6 @@ Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, 
 		});
 		wnd.show();
 	},
-
 	startDelete: function(model, records, delete_local_data) {
 		if (records.length <= 0)
 			return;
@@ -439,7 +496,7 @@ Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, 
 		this.deleteActionInfo = {
 			records: records,
 			count: records.length
-		}
+		};
 		// Get first record to be deleted
 		var record = this.deleteActionInfo.records.pop();
 		// Display progress dialog
@@ -448,13 +505,11 @@ Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, 
 		// Execute deletion function
 		this.doDelete(record, delete_local_data);
 	},
-
 	doDelete : function(record, delete_local_data) {
 		OMV.Ajax.request(this.cbDeleteHdl, this, "TransmissionBT", "delete", [{ id:  record.get("id"), deleteLocalData: delete_local_data }] );
 
 
 	},
-
 	updateDeleteProgress : function() {
 		// Calculate percentage
 		var p = (this.deleteActionInfo.count - this.deleteActionInfo.records.length) /
@@ -464,7 +519,6 @@ Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, 
 		// Update progress dialog
 		OMV.MessageBox.updateProgress(p, text);
 	},
-
 	cbDeleteHdl : function(id, response, error) {
 		if (error !== null) {
 			// Remove temporary local variables
@@ -486,24 +540,19 @@ Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, 
 				// Update and hide progress dialog
 				OMV.MessageBox.updateProgress(1, "100% completed ...");
 				OMV.MessageBox.hide();
-				this.afterDelete();
+				this.doReload();
 			}
 		}
 	},
+	/* /DELETION HANDLER */
 
-	afterDelete : function() {
-		if (this.mode === "remote") {
-			this.doReload();
-		}
-	},
-
+	/* RESUME HANDLER */
 	cbResumeBtnHdl : function() {
 		var selModel = this.getSelectionModel();
 		var records = selModel.getSelections();
 
 		this.startResume(selModel, records);
 	},
-
 	startResume: function(model, records) {
 		if (records.length <= 0)
 			return;
@@ -511,7 +560,7 @@ Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, 
 		this.resumeActionInfo = {
 			records: records,
 			count: records.length
-		}
+		};
 		// Get first record to be deleted
 		var record = this.resumeActionInfo.records.pop();
 		// Display progress dialog
@@ -520,12 +569,10 @@ Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, 
 		// Execute deletion function
 		this.doResume(record);
 	},
-
 	doResume : function(record) {
 		OMV.Ajax.request(this.cbResumeHdl, this, "TransmissionBT", "resume", [ record.get("id") ]);
 		//cbResumeHdl(null, null, null);
 	},
-
 	updateResumeProgress : function() {
 		// Calculate percentage
 		var p = (this.resumeActionInfo.count - this.resumeActionInfo.records.length) /
@@ -535,7 +582,6 @@ Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, 
 		// Update progress dialog
 		OMV.MessageBox.updateProgress(p, text);
 	},
-
 	cbResumeHdl : function(id, response, error) {
 		if (error !== null) {
 			// Remove temporary local variables
@@ -557,24 +603,19 @@ Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, 
 				// Update and hide progress dialog
 				OMV.MessageBox.updateProgress(1, "100% completed ...");
 				OMV.MessageBox.hide();
-				this.afterResume();
+				this.doReload();
 			}
 		}
 	},
+	/* /RESUME HANDLER */
 
-	afterResume : function() {
-		if (this.mode === "remote") {
-			this.doReload();
-		}
-	},
-
+	/* PAUSE HANDLER */
 	cbPauseBtnHdl : function() {
 		var selModel = this.getSelectionModel();
 		var records = selModel.getSelections();
 
 		this.startPause(selModel, records);
 	},
-
 	startPause: function(model, records) {
 		if (records.length <= 0)
 			return;
@@ -582,7 +623,7 @@ Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, 
 		this.pauseActionInfo = {
 			records: records,
 			count: records.length
-		}
+		};
 		// Get first record to be deleted
 		var record = this.pauseActionInfo.records.pop();
 		// Display progress dialog
@@ -591,11 +632,9 @@ Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, 
 		// Execute deletion function
 		this.doPause(record);
 	},
-
 	doPause : function(record) {
 		OMV.Ajax.request(this.cbPauseHdl, this, "TransmissionBT", "pause", [ record.get("id") ]);
 	},
-
 	updatePauseProgress : function() {
 		// Calculate percentage
 		var p = (this.pauseActionInfo.count - this.pauseActionInfo.records.length) /
@@ -605,7 +644,6 @@ Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, 
 		// Update progress dialog
 		OMV.MessageBox.updateProgress(p, text);
 	},
-
 	cbPauseHdl : function(id, response, error) {
 		if (error !== null) {
 			// Remove temporary local variables
@@ -627,17 +665,71 @@ Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, 
 				// Update and hide progress dialog
 				OMV.MessageBox.updateProgress(1, "100% completed ...");
 				OMV.MessageBox.hide();
-				this.afterPause();
+				this.doReload();
 			}
 		}
 	},
+	/* /PAUSE HANDLER */
 
-	afterPause : function() {
-		if (this.mode === "remote") {
-			this.doReload();
+	/* QUEUE MOVE HANDLER */
+	startQueueMove: function(model, records, action) {
+		if (records.length <= 0)
+			return;
+		// Store selected records in a local variable
+		this.queueMoveActionInfo = {
+			records: records,
+			count: records.length,
+			action: action
+		};
+		// Get first record to be deleted
+		var record = this.queueMoveActionInfo.records.pop();
+		// Display progress dialog
+		OMV.MessageBox.progress("", this.queueMoveWaitMsg, "");
+		this.updateQueueMoveProgress();
+		// Execute deletion function
+		this.doQueueMove(record, action);
+	},
+	doQueueMove : function(record) {
+		OMV.Ajax.request(this.cbQueueMoveHdl, this, "TransmissionBT", "queue-move-" + action, [ record.get("id") ]);
+	},
+	updateQueueMoveProgress : function() {
+		// Calculate percentage
+		var p = (this.queueMoveActionInfo.count - this.queueMoveActionInfo.records.length) /
+		  this.queueMoveActionInfo.count;
+		// Create message text
+		var text = Math.round(100 * p) + "% completed ...";
+		// Update progress dialog
+		OMV.MessageBox.updateProgress(p, text);
+	},
+	cbQueueMoveHdl : function(id, response, error) {
+		if (error !== null) {
+			// Remove temporary local variables
+			delete this.queueMoveActionInfo;
+			// Hide progress dialog
+			OMV.MessageBox.hide();
+			// Display error message
+			OMV.MessageBox.error(null, error);
+		} else {
+			if (this.queueMoveActionInfo.records.length > 0) {
+				var record = this.queueMoveActionInfo.records.pop();
+				var action = this.queueMoveActionInfo.action;
+				// Update progress dialog
+				this.updateQueueMoveProgress();
+				// Execute deletion function
+				this.doQueueMove(record, action);
+			} else {
+				// Remove temporary local variables
+				delete this.queueMoveActionInfo;
+				// Update and hide progress dialog
+				OMV.MessageBox.updateProgress(1, "100% completed ...");
+				OMV.MessageBox.hide();
+				this.doReload();
+			}
 		}
 	},
+	/* /QUEUE MOVE HANDLER */
 
+	/* RENDERER */
 	doneRenderer : function(val, cell, record, row, col, store) {
 		var percentage = parseFloat(record.get("percentDone"));
 		var totalSize = parseInt(record.get("totalSize"));
@@ -647,13 +739,13 @@ Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, 
 			return val;
 		}
 		var id = Ext.id();
-		(function(){
+		(function() {
 			new Ext.ProgressBar({
 				renderTo: id,
 				value: percentage,
 				text: bytesToSize(haveValid) + '/' + bytesToSize(totalSize) + ' (' + parseInt(percentage * 100) + '%)'
 			});
-		}).defer(25)
+		}).defer(25);
 		return '<div id="' + id + '"></div>';
 	},
 
@@ -735,6 +827,7 @@ Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, 
 		}
 		return val;
 	}
+	/* /RENDERER */
 });
 OMV.NavigationPanelMgr.registerPanel("services", "transmissionbtm", {
 	cls: OMV.Module.Services.TransmissionBTGridPanel
@@ -745,7 +838,7 @@ function bytesToSize (bytes) {
   if (bytes == 0) return 'n/a';
   var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
   return ((i == 0)? (bytes / Math.pow(1024, i)) : (bytes / Math.pow(1024, i)).toFixed(1)) + ' ' + sizes[i];
-};
+}
 
 function timeInterval (seconds)
 {
@@ -773,7 +866,7 @@ function timeInterval (seconds)
 		return m + ' ' + s;
 	}
 	return s;
-};
+}
 
 function rate (Bps)
 {
@@ -792,13 +885,13 @@ function rate (Bps)
 	// insane speeds
 	speed /= 1000;
 	return [ speed.toTruncFixed(2), 'GB/s' ].join(' ');
-};
+}
 
 Number.prototype.toTruncFixed = function(place) {
         var ret = Math.floor(this * Math.pow (10, place)) / Math.pow(10, place);
         return ret.toFixed(place);
-}
+};
 
 Number.prototype.toStringWithCommas = function() {
     return this.toString().replace(/\B(?=(?:\d{3})+(?!\d))/g, ",");
-}
+};
