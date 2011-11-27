@@ -27,7 +27,7 @@ require_once("openmediavault/util.inc");
 require_once("openmediavault/rpc.inc");
 require_once("openmediavault/notify.inc");
 
-require_once("transmissionrpc.inc");
+require_once("openmediavault/transmission.inc");
 
 class TransmissionBTRpc extends OMVRpc {
 	public function __construct() {
@@ -239,7 +239,7 @@ class TransmissionBTRpc extends OMVRpc {
 			"utp-enabled" => array_boolval($data,'utp-enabled'),
 			"message-level" => $data['message-level'],
 		);
-		// Set configuration object		
+		// Set configuration object
 		if (FALSE === $xmlConfig->replace($xpath, $object)) {
 			throw new OMVException(OMVErrorMsg::E_CONFIG_SET_OBJECT_FAILED);
 		}
@@ -253,7 +253,7 @@ class TransmissionBTRpc extends OMVRpc {
 		$dispatcher->notify(OMV_NOTIFY_MODIFY,
 		  "org.openmediavault.services.transmissionbt", $object);
 	}
-	
+
 	/**
 	 * Get locations and files settings object
 	 */
@@ -327,7 +327,7 @@ class TransmissionBTRpc extends OMVRpc {
 		$dispatcher->notify(OMV_NOTIFY_MODIFY,
 		  "org.openmediavault.services.transmissionbt", $object);
 	}
-	
+
 	/**
 	 * Get bandwidth settings object
 	 */
@@ -357,7 +357,7 @@ class TransmissionBTRpc extends OMVRpc {
 		$object['alt-speed-enabled'] = boolval($object['alt-speed-enabled']);
 		$object['alt-speed-up'] = intval($object['alt-speed-up']);
 		$object['alt-speed-down'] = intval($object['alt-speed-down']);
-		
+
 		return $object;
 	}
 
@@ -403,7 +403,7 @@ class TransmissionBTRpc extends OMVRpc {
 		$dispatcher->notify(OMV_NOTIFY_MODIFY,
 		  "org.openmediavault.services.transmissionbt", $object);
 	}
-	
+
 	/**
 	 * Get queuing settings object
 	 */
@@ -432,7 +432,7 @@ class TransmissionBTRpc extends OMVRpc {
 		// Seed
 		$object['seed-queue-enabled'] = boolval($object['seed-queue-enabled']);
 		$object['seed-queue-size'] = intval($object['seed-queue-size']);
-		
+
 		return $object;
 	}
 
@@ -477,7 +477,7 @@ class TransmissionBTRpc extends OMVRpc {
 		$dispatcher->notify(OMV_NOTIFY_MODIFY,
 		  "org.openmediavault.services.transmissionbt", $object);
 	}
-	
+
 	/**
 	 * Get peer settings object
 	 */
@@ -685,7 +685,7 @@ class TransmissionBTRpc extends OMVRpc {
 		$dispatcher->notify(OMV_NOTIFY_MODIFY,
 		  "org.openmediavault.services.transmissionbt", $object);
 	}
-	
+
 	/**
 	 * Get list of torrents
 	 */
@@ -707,8 +707,8 @@ class TransmissionBTRpc extends OMVRpc {
 			throw new OMVException(OMVErrorMsg::E_CONFIG_GET_OBJECT_FAILED,
 			  $xpath);
 		}
-		
-		$transmissionbt_rpc = new TransmissionRPC();
+
+		$transmissionbt_rpc = new Transmission();
 		$transmissionbt_rpc->return_as_array = true;
 		// Set authentication when needed
 		if (array_boolval($object, 'rpcauthenticationrequired') === true)
@@ -716,7 +716,7 @@ class TransmissionBTRpc extends OMVRpc {
 			$transmissionbt_rpc->username = $object['rpcusername'];
 			$transmissionbt_rpc->password = $object['rpcpassword'];
 		}
-		
+
 		$torrents = $transmissionbt_rpc->get(array(), array(
 															'id',
 															'name',
@@ -734,13 +734,13 @@ class TransmissionBTRpc extends OMVRpc {
 															'uploadRatio',
 															)
 		);
-		
+
 		$torrents = $torrents['arguments']['torrents'];
-		
+
 		// Filter result
 		return $this->applyFilter($torrents, $start, $count, $sortField, $sortDir);
 	}
-	
+
 	/**
 	* Process uploaded torrent file
 	*/
@@ -758,7 +758,7 @@ class TransmissionBTRpc extends OMVRpc {
 			  "Invalid upload request");
 		}
 		//$this->validateParams(__METHOD__, func_get_args());
-		
+
 		// Get configuration data
 		$xpath = "//services/transmissionbt";
 		$object = $xmlConfig->get($xpath);
@@ -766,8 +766,8 @@ class TransmissionBTRpc extends OMVRpc {
 			throw new OMVException(OMVErrorMsg::E_CONFIG_GET_OBJECT_FAILED,
 			  $xpath);
 		}
-		
-		$transmissionbt_rpc = new TransmissionRPC();
+
+		$transmissionbt_rpc = new Transmission();
 		$transmissionbt_rpc->return_as_array = true;
 		// Set authentication when needed
 		if (array_boolval($object, 'rpcauthenticationrequired') === true)
@@ -775,17 +775,17 @@ class TransmissionBTRpc extends OMVRpc {
 			$transmissionbt_rpc->username = $object['rpcusername'];
 			$transmissionbt_rpc->password = $object['rpcpassword'];
 		}
-		
+
 		$file_path = sys_get_temp_dir() . '/' . $_FILES['file']['name'];
-		
+
 		move_uploaded_file($_FILES['file']['tmp_name'], $file_path);
-		
+
 		//$start_download = !array_boolval($data, 'start-download');
-		
+
 		$torrent = $transmissionbt_rpc->add_file($file_path, ''/*, $start_download*/);
 		unlink($file_path);
 	}
-	
+
 	/**
 	* Delete specific torrent
 	* Optional delete local data
@@ -808,8 +808,8 @@ class TransmissionBTRpc extends OMVRpc {
 			throw new OMVException(OMVErrorMsg::E_CONFIG_GET_OBJECT_FAILED,
 			  $xpath);
 		}
-		
-		$transmissionbt_rpc = new TransmissionRPC();
+
+		$transmissionbt_rpc = new Transmission();
 		$transmissionbt_rpc->return_as_array = true;
 		// Set authentication when needed
 		if (array_boolval($object, 'rpcauthenticationrequired') === true)
@@ -817,12 +817,12 @@ class TransmissionBTRpc extends OMVRpc {
 			$transmissionbt_rpc->username = $object['rpcusername'];
 			$transmissionbt_rpc->password = $object['rpcpassword'];
 		}
-		
+
 		$transmissionbt_rpc->remove($data['id'], array_boolval($data, 'deleteLocalData'));
-		
+
 		return 'success';
 	}
-	
+
 	/**
 	* Resume specific torrent
 	*/
@@ -844,8 +844,8 @@ class TransmissionBTRpc extends OMVRpc {
 			throw new OMVException(OMVErrorMsg::E_CONFIG_GET_OBJECT_FAILED,
 			  $xpath);
 		}
-		
-		$transmissionbt_rpc = new TransmissionRPC();
+
+		$transmissionbt_rpc = new Transmission();
 		$transmissionbt_rpc->return_as_array = true;
 		// Set authentication when needed
 		if (array_boolval($object, 'rpcauthenticationrequired') === true)
@@ -853,12 +853,12 @@ class TransmissionBTRpc extends OMVRpc {
 			$transmissionbt_rpc->username = $object['rpcusername'];
 			$transmissionbt_rpc->password = $object['rpcpassword'];
 		}
-		
+
 		$transmissionbt_rpc->start($id);
-		
+
 		return 'success';
 	}
-	
+
 	/**
 	* Pause specific torrent
 	*/
@@ -880,8 +880,8 @@ class TransmissionBTRpc extends OMVRpc {
 			throw new OMVException(OMVErrorMsg::E_CONFIG_GET_OBJECT_FAILED,
 			  $xpath);
 		}
-		
-		$transmissionbt_rpc = new TransmissionRPC();
+
+		$transmissionbt_rpc = new Transmission();
 		$transmissionbt_rpc->return_as_array = true;
 		// Set authentication when needed
 		if (array_boolval($object, 'rpcauthenticationrequired') === true)
@@ -889,9 +889,9 @@ class TransmissionBTRpc extends OMVRpc {
 			$transmissionbt_rpc->username = $object['rpcusername'];
 			$transmissionbt_rpc->password = $object['rpcpassword'];
 		}
-		
+
 		$transmissionbt_rpc->stop($id);
-		
+
 		return 'success';
 	}
 }
