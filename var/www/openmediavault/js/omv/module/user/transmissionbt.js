@@ -169,9 +169,55 @@ Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, 
     			]
 			})
 		});
+		this.contextMenu = new Ext.menu.Menu({
+			items: [{
+				id: this.getId() + "-menu-delete",
+				text: "Delete",
+				handler: this.cbDeleteBtnHdl,
+				scope: this
+			},{
+				id: this.getId() + "-menu-pause",
+				text: "Pause",
+				handler: this.cbPauseBtnHdl,
+				scope: this
+			},{
+				id: this.getId() + "-menu-resume",
+				text: "Resume",
+				handler: this.cbResumeBtnHdl,
+				scope: this
+			},{
+				id: this.getId() + "-menu-queue-top",
+				text: "Queue Move Top",
+				handler: this.cbQueueMoveMenuHdl,
+				scope: this,
+				action: 'top'
+			},{
+				id: this.getId() + "-menu-queue-up",
+				text: "Queue Move Up",
+				handler: this.cbQueueMoveMenuHdl,
+				scope: this,
+				action: 'up'
+			},{
+				id: this.getId() + "-menu-queue-down",
+				text: "Queue Move Down",
+				handler: this.cbQueueMoveMenuHdl,
+				scope: this,
+				action: 'down'
+			},{
+				id: this.getId() + "-menu-queue-bottom",
+				text: "Queue Move Bottom",
+				handler: this.cbQueueMoveMenuHdl,
+				scope: this,
+				action: 'bottom'
+			}]
+		});
 		OMV.Module.Services.TransmissionBTGridPanel.superclass.initComponent.apply(this,
 		  arguments);
 	},
+
+	getContextMenu : function(){
+        return this.contextMenu;
+    },
 
 	initToolbar : function() {
 		var tbar = OMV.Module.Services.TransmissionBTGridPanel.superclass.initToolbar.apply(
@@ -224,60 +270,16 @@ Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, 
 
 	listeners: {
 		'rowcontextmenu' : function(grid, index, event) {
-			this.contextMenu(grid, index, event);
+			this.showContextMenu(grid, index, event);
 		}
 	},
 
-	contextMenu : function(grid, index, event) {
+	showContextMenu : function(grid, index, event) {
 		event.stopEvent();
 		var records = new Array(grid.getStore().getAt(index));
 		var sm = this.getSelectionModel();
 		sm.selectRow(index);
-		var menu = new Ext.menu.Menu({
-			items: [{
-				id: this.getId() + "-menu-delete",
-				text: "Delete",
-				handler: function() {
-					grid.startDelete(sm, records);
-				}
-			},{
-				id: this.getId() + "-menu-pause",
-				text: "Pause",
-				handler: function() {
-					grid.startPause(sm, records);
-				}
-			},{
-				id: this.getId() + "-menu-resume",
-				text: "Resume",
-				handler: function() {
-					grid.startResume(sm, records);
-				}
-			},{
-				id: this.getId() + "-menu-queue-top",
-				text: "Queue Move Top",
-				handler: function() {
-					grid.queueMove(sm, records, 'top');
-				}
-			},{
-				id: this.getId() + "-menu-queue-up",
-				text: "Queue Move Up",
-				handler: function() {
-					grid.queueMove(sm, records, 'up');
-				}
-			},{
-				id: this.getId() + "-menu-queue-down",
-				text: "Queue Move Down",
-				handler: function() {
-					grid.queueMove(sm, records, 'down');
-				}
-			},{
-				id: this.getId() + "-menu-queue-bottom",
-				text: "Queue Move Bottom",
-				handler: function() {
-					grid.queueMove(sm, records, 'bottom');
-				}
-			}]
-		}).showAt(event.xy);
+		this.contextMenu.showAt(event.xy);
 	},
 
 	cbSelectionChangeHdl : function(model) {
@@ -355,15 +357,15 @@ Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, 
 		var sm = this.getSelectionModel();
 		var records = sm.getSelections();
 
-		var menuItemDeleteCtrl = this.getTopToolbar().findById(this.getId() + "-menu-delete");
-		var menuItemPauseCtrl = this.getTopToolbar().findById(this.getId() + "-menu-pause");
-		var menuItemResumeCtrl = this.getTopToolbar().findById(this.getId() + "-menu-resume");
+		var menuItemDeleteCtrl = this.getContextMenu().findById(this.getId() + "-menu-delete");
+		var menuItemPauseCtrl = this.getContextMenu().findById(this.getId() + "-menu-pause");
+		var menuItemResumeCtrl = this.getContextMenu().findById(this.getId() + "-menu-resume");
 
 		/* Queue Menu Items */
-		var menuItemQueueTopCtrl = this.getTopToolbar().findById(this.getId() + "-menu-queue-top");
-		var menuItemQueueUpCtrl = this.getTopToolbar().findById(this.getId() + "-menu-queue-up");
-		var menuItemQueueDownCtrl = this.getTopToolbar().findById(this.getId() + "-menu-queue-down");
-		var menuItemQueueBottomCtrl = this.getTopToolbar().findById(this.getId() + "-menu-queue-bottom");
+		var menuItemQueueTopCtrl = this.getContextMenu().findById(this.getId() + "-menu-queue-top");
+		var menuItemQueueUpCtrl = this.getContextMenu().findById(this.getId() + "-menu-queue-up");
+		var menuItemQueueDownCtrl = this.getContextMenu().findById(this.getId() + "-menu-queue-down");
+		var menuItemQueueBottomCtrl = this.getContextMenu().findById(this.getId() + "-menu-queue-bottom");
 
 		if (records.length <= 0) {
 			menuItemDeleteCtrl.disable();
@@ -672,6 +674,13 @@ Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, 
 	/* /PAUSE HANDLER */
 
 	/* QUEUE MOVE HANDLER */
+	cbQueueMoveMenuHdl : function(item, event) {
+		var selModel = this.getSelectionModel();
+		var records = selModel.getSelections();
+
+		this.startQueueMove(selModel, records, item.action);
+	},
+
 	startQueueMove: function(model, records, action) {
 		if (records.length <= 0)
 			return;
@@ -689,8 +698,8 @@ Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, 
 		// Execute deletion function
 		this.doQueueMove(record, action);
 	},
-	doQueueMove : function(record) {
-		OMV.Ajax.request(this.cbQueueMoveHdl, this, "TransmissionBT", "queue-move-" + action, [ record.get("id") ]);
+	doQueueMove : function(record, action) {
+		OMV.Ajax.request(this.cbQueueMoveHdl, this, "TransmissionBT", "queueMove", [ { id : record.get("id"), action : action } ]);
 	},
 	updateQueueMoveProgress : function() {
 		// Calculate percentage

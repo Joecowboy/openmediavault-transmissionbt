@@ -154,6 +154,13 @@ class TransmissionBTRpc extends OMVRpc {
 			"upload" => array(
 				'{"type":"boolean"}'
 			),
+			"queueMove" => array('{
+				"type":"object",
+				"properties":{
+					"id":{"type":"integer", "minimum":0},
+					"action":{"type":"string","enum":'.'["top","up","down","bottom"]}
+				}
+			}'),
 		);
 	}
 
@@ -892,6 +899,64 @@ class TransmissionBTRpc extends OMVRpc {
 		}
 
 		$transmissionbt_rpc->stop($id);
+
+		return 'success';
+	}
+
+	/**
+	 * Queue move specific torrent
+	 *
+	 * @throws OMVException
+	 * @param $id
+	 * @return string
+	 */
+	public function queueMove($data) {
+//		$this->debug(var_export(func_get_args(), TRUE));
+		global $xmlConfig;
+		// Check permissions
+		$this->validateSession();
+		//if (!$this->hasRole(OMV_ROLE_ADMINISTRATOR)) {
+		//	throw new OMVException(OMVErrorMsg::E_RPC_SERVICE_INVALID_PERMISSION);
+		//}
+		$this->commitSession();
+		// Validate method parameters
+		$this->validateParams(__METHOD__, func_get_args());
+		// Get configuration data
+		$xpath = "//services/transmissionbt";
+		$object = $xmlConfig->get($xpath);
+		if (is_null($object)) {
+			throw new OMVException(OMVErrorMsg::E_CONFIG_GET_OBJECT_FAILED,
+			  $xpath);
+		}
+
+		$transmissionbt_rpc = new Transmission();
+		$transmissionbt_rpc->return_as_array = true;
+		// Set authentication when needed
+		if (array_boolval($object, 'rpcauthenticationrequired') === true)
+		{
+			$transmissionbt_rpc->username = $object['rpcusername'];
+			$transmissionbt_rpc->password = $object['rpcpassword'];
+		}
+
+		switch ($data['action'])
+		{
+			case 'top':
+				$transmissionbt_rpc->queueMoveTop($data['id']);
+				break;
+			case 'up':
+				$transmissionbt_rpc->queueMoveUp($data['id']);
+				break;
+			case 'down':
+				$transmissionbt_rpc->queueMoveDown($data['id']);
+				break;
+			case 'bottom':
+				$transmissionbt_rpc->queueMoveBottom($data['id']);
+				break;
+			default:
+				throw new OMVException('Unknown Action: ' . $data['action']);
+				break;
+		}
+
 
 		return 'success';
 	}
