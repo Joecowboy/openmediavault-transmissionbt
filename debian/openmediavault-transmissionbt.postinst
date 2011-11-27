@@ -215,6 +215,11 @@ case "$1" in
 		# transmission-daemon package.
 		########################################################################
 		omv_config_import_group "debian-transmission"
+		
+		if [ "$(omv_config_get "//services/transmissionbt/enable")" = "1" ]; then
+			echo "Restarting transmission-daemon"
+			invoke-rc.d --quiet transmission-daemon restart
+		fi
 	;;
 
 	abort-upgrade|abort-remove|abort-deconfigure)

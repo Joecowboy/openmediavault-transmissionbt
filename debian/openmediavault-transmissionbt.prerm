@@ -21,14 +21,13 @@
 
 set -e
 
-# Stop service
-invoke-rc.d --quiet transmission-daemon stop
-
 case "$1" in
-	purge)
+	purge|remove|failed-upgrade|abort-install|abort-upgrade|disappear)
+		# Stop service
+		invoke-rc.d --quiet transmission-daemon stop
 	;;
-
-	remove|upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
+	
+	upgrade)
 	;;
 
 	*)
