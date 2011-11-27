@@ -6,6 +6,7 @@
  * @author    Volker Theile <volker.theile@openmediavault.org>
  * @author    Marcel Beck <marcel.beck@mbeck.org>
  * @copyright Copyright (c) 2009-2011 Volker Theile
+ * @copyright Copyright (c) 2011 Marcel Beck
  *
  * OpenMediaVault is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -157,7 +158,7 @@ class TransmissionBTRpc extends OMVRpc {
 	}
 
 	/**
-	 * Get configuration object.
+	 * Get general settings object
 	 */
 	function getSettings() {
 		global $xmlConfig;
@@ -194,7 +195,7 @@ class TransmissionBTRpc extends OMVRpc {
 	}
 
 	/**
-	 * Set configuration object.
+	 * Set general settings object
 	 */
 	function setSettings($data) {
 //		$this->debug(var_export(func_get_args(), TRUE));
@@ -254,7 +255,7 @@ class TransmissionBTRpc extends OMVRpc {
 	}
 	
 	/**
-	 * Get configuration object.
+	 * Get locations and files settings object
 	 */
 	function getLocationsAndFiles() {
 		global $xmlConfig;
@@ -284,7 +285,7 @@ class TransmissionBTRpc extends OMVRpc {
 	}
 
 	/**
-	 * Set configuration object.
+	 * Set locations and files settings object
 	 */
 	function setLocationsAndFiles($data) {
 //		$this->debug(var_export(func_get_args(), TRUE));
@@ -328,7 +329,7 @@ class TransmissionBTRpc extends OMVRpc {
 	}
 	
 	/**
-	 * Get configuration object.
+	 * Get bandwidth settings object
 	 */
 	function getBandwidth() {
 		global $xmlConfig;
@@ -361,7 +362,7 @@ class TransmissionBTRpc extends OMVRpc {
 	}
 
 	/**
-	 * Set configuration object.
+	 * Set bandwidth settings object
 	 */
 	function setBandwidth($data) {
 //		$this->debug(var_export(func_get_args(), TRUE));
@@ -404,7 +405,7 @@ class TransmissionBTRpc extends OMVRpc {
 	}
 	
 	/**
-	 * Get configuration object.
+	 * Get queuing settings object
 	 */
 	function getQueuing() {
 		global $xmlConfig;
@@ -436,7 +437,7 @@ class TransmissionBTRpc extends OMVRpc {
 	}
 
 	/**
-	 * Set configuration object.
+	 * Set queueing settings object
 	 */
 	function setQueuing($data) {
 //		$this->debug(var_export(func_get_args(), TRUE));
@@ -478,7 +479,7 @@ class TransmissionBTRpc extends OMVRpc {
 	}
 	
 	/**
-	 * Get configuration object.
+	 * Get peer settings object
 	 */
 	function getPeer() {
 		global $xmlConfig;
@@ -510,7 +511,7 @@ class TransmissionBTRpc extends OMVRpc {
 	}
 
 	/**
-	 * Set configuration object.
+	 * Set peer settings object
 	 */
 	function setPeer($data) {
 //		$this->debug(var_export(func_get_args(), TRUE));
@@ -557,7 +558,7 @@ class TransmissionBTRpc extends OMVRpc {
 	}
 
 	/**
-	 * Get configuration object.
+	 * Get scheduling settings object
 	 */
 	function getScheduling() {
 		global $xmlConfig;
@@ -621,7 +622,7 @@ class TransmissionBTRpc extends OMVRpc {
 	}
 
 	/**
-	 * Set configuration object.
+	 * Set scheduling settings object
 	 */
 	function setScheduling($data) {
 //		$this->debug(var_export(func_get_args(), TRUE));
@@ -686,10 +687,7 @@ class TransmissionBTRpc extends OMVRpc {
 	}
 	
 	/**
-	 * Get the cron jobs of the requested types.
-	 * @param types Array of cron jobs types which are reboot, shutdown
-	 * or userdefined.
-	 * @return An array of cron jobs of the requested types.
+	 * Get list of torrents
 	 */
 	public function getList($start, $count, $sortField, $sortDir, $types) {
 //		$this->debug(var_export(func_get_args(), TRUE));
@@ -743,6 +741,9 @@ class TransmissionBTRpc extends OMVRpc {
 		return $this->applyFilter($torrents, $start, $count, $sortField, $sortDir);
 	}
 	
+	/**
+	* Process uploaded torrent file
+	*/
 	function upload() {
 		global $xmlConfig;
 		// Check permissions
@@ -785,6 +786,10 @@ class TransmissionBTRpc extends OMVRpc {
 		unlink($file_path);
 	}
 	
+	/**
+	* Delete specific torrent
+	* Optional delete local data
+	*/
 	public function delete($data) {
 //		$this->debug(var_export(func_get_args(), TRUE));
 		global $xmlConfig;
@@ -818,6 +823,9 @@ class TransmissionBTRpc extends OMVRpc {
 		return 'success';
 	}
 	
+	/**
+	* Resume specific torrent
+	*/
 	public function resume($id) {
 //		$this->debug(var_export(func_get_args(), TRUE));
 		global $xmlConfig;
@@ -828,7 +836,7 @@ class TransmissionBTRpc extends OMVRpc {
 		//}
 		$this->commitSession();
 		// Validate method parameters
-		//$this->validateParams(__METHOD__, func_get_args());
+		$this->validateParams(__METHOD__, func_get_args());
 		// Get configuration data
 		$xpath = "//services/transmissionbt";
 		$object = $xmlConfig->get($xpath);
@@ -851,6 +859,9 @@ class TransmissionBTRpc extends OMVRpc {
 		return 'success';
 	}
 	
+	/**
+	* Pause specific torrent
+	*/
 	public function pause($id) {
 //		$this->debug(var_export(func_get_args(), TRUE));
 		global $xmlConfig;
