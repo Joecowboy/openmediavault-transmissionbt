@@ -1,23 +1,11 @@
 /**
- * This file is part of OpenMediaVault.
- *
- * @license   http://www.gnu.org/licenses/gpl.html GPL Version 3
- * @author    Marcel Beck <marcel.beck@mbeck.org>
- * @copyright Copyright (c) 2011 Marcel Beck
- *
- * OpenMediaVault is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * OpenMediaVault is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with OpenMediaVault. If not, see <http://www.gnu.org/licenses/>.
+ * Created by JetBrains PhpStorm.
+ * User: mbeck
+ * Date: 28.11.11
+ * Time: 20:53
+ * To change this template use File | Settings | File Templates.
  */
+
 // require("js/omv/NavigationPanel.js")
 // require("js/omv/data/DataProxy.js")
 // require("js/omv/data/Store.js")
@@ -26,22 +14,22 @@
 // require("js/omv/form/MultiSelect.js")
 // require("js/omv/util/Format.js")
 // require("js/omv/ExecCmdDialog.js")
-// require("js/omv/module/transmissionbt/uploadDialog.js")
-// require("js/omv/module/transmissionbt/deleteDialog.js")
 
-Ext.ns("OMV.Module.Services");
+// require("js/omv/module/transmissionbt/util/Format.js")
 
-// Register the menu.
-OMV.NavigationPanelMgr.registerMenu("services", "transmissionbtm", {
-	text: "BitTorrent Manage",
-	icon: "images/transmissionbt.png"
-});
+// require("js/omv/module/transmissionbt/user/dialog/upload.js")
+// require("js/omv/module/transmissionbt/user/dialog/delete.js")
+
+// require("js/omv/module/transmissionbt/NavigationPanel.js")
+// require("js/omv/module/transmissionbt/user/NavigationPanel.js")
+
+Ext.ns("OMV.Module.TransmissionBT");
 
 /**
- * @class OMV.Module.Services.TransmissionBTGridPanel
+ * @class OMV.Module.TransmissionBT.ManageGridPanel
  * @derived OMV.grid.TBarGridPanel
  */
-OMV.Module.Services.TransmissionBTGridPanel = function(config) {
+OMV.Module.TransmissionBT.ManageGridPanel = function(config) {
 	var initialConfig = {
 		autoReload: true,
 		reloadInterval: 10000,
@@ -136,10 +124,10 @@ OMV.Module.Services.TransmissionBTGridPanel = function(config) {
 		})
 	};
 	Ext.apply(initialConfig, config);
-	OMV.Module.Services.TransmissionBTGridPanel.superclass.constructor.call(this,
+	OMV.Module.TransmissionBT.ManageGridPanel.superclass.constructor.call(this,
 	  initialConfig);
 };
-Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, {
+Ext.extend(OMV.Module.TransmissionBT.ManageGridPanel, OMV.grid.TBarGridPanel, {
 	initComponent : function() {
 		this.store = new OMV.data.Store({
 			autoLoad: true,
@@ -211,7 +199,7 @@ Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, 
 				action: 'bottom'
 			}]
 		});
-		OMV.Module.Services.TransmissionBTGridPanel.superclass.initComponent.apply(this,
+		OMV.Module.TransmissionBT.ManageGridPanel.superclass.initComponent.apply(this,
 		  arguments);
 	},
 
@@ -220,7 +208,7 @@ Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, 
     },
 
 	initToolbar : function() {
-		var tbar = OMV.Module.Services.TransmissionBTGridPanel.superclass.initToolbar.apply(
+		var tbar = OMV.Module.TransmissionBT.ManageGridPanel.superclass.initToolbar.apply(
 		  this);
 		tbar.insert(0, {
 			id: this.getId() + "-reload",
@@ -283,7 +271,7 @@ Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, 
 	},
 
 	cbSelectionChangeHdl : function(model) {
-		OMV.Module.Services.TransmissionBTGridPanel.superclass.cbSelectionChangeHdl.apply(this, arguments);
+		OMV.Module.TransmissionBT.ManageGridPanel.superclass.cbSelectionChangeHdl.apply(this, arguments);
 		// Process additional buttons
 		this.toggleButtons();
 		this.toggleContextMenu();
@@ -752,7 +740,7 @@ Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, 
 			new Ext.ProgressBar({
 				renderTo: id,
 				value: percentage,
-				text: bytesToSize(haveValid) + '/' + bytesToSize(totalSize) + ' (' + parseInt(percentage * 100) + '%)'
+				text: OMV.Module.TransmissionBT.util.Format.bytesToSize(haveValid) + '/' + OMV.Module.TransmissionBT.util.Format.bytesToSize(totalSize) + ' (' + parseInt(percentage * 100) + '%)'
 			});
 		}).defer(25);
 		return '<div id="' + id + '"></div>';
@@ -797,7 +785,7 @@ Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, 
 			val = "Unknown";
 			break;
 		default:
-			val = timeInterval(val);
+			val = OMV.Module.TransmissionBT.util.Format.timeInterval(val);
 			break;
 		}
 		return val;
@@ -813,7 +801,7 @@ Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, 
 	},
 
 	rateRenderer : function(val, cell, record, row, col, store) {
-		val = rate(val);
+		val = OMV.Module.TransmissionBT.util.Format.rate(val);
 		return val;
 	},
 
@@ -838,69 +826,6 @@ Ext.extend(OMV.Module.Services.TransmissionBTGridPanel, OMV.grid.TBarGridPanel, 
 	}
 	/* /RENDERER */
 });
-OMV.NavigationPanelMgr.registerPanel("services", "transmissionbtm", {
-	cls: OMV.Module.Services.TransmissionBTGridPanel
+OMV.NavigationPanelMgr.registerPanel("transmissionbt", "manage", {
+	cls: OMV.Module.TransmissionBT.ManageGridPanel
 });
-
-function bytesToSize (bytes) {
-  var sizes = ['Bytes', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
-  if (bytes == 0) return 'n/a';
-  var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
-  return ((i == 0)? (bytes / Math.pow(1024, i)) : (bytes / Math.pow(1024, i)).toFixed(1)) + ' ' + sizes[i];
-}
-
-function timeInterval (seconds)
-{
-	var weeks    = Math.floor (seconds / 604800),
-		days    = Math.floor ((seconds % 604800) / 86400),
-		hours   = Math.floor ((seconds % 86400) / 3600),
-		minutes = Math.floor ((seconds % 3600) / 60),
-		seconds = Math.floor (seconds % 60),
-		w = weeks   + 'w',
-		d = days    + 'd',
-		h = hours   + 'h',
-		m = minutes + 'm',
-		s = seconds + 's';
-
-	if (weeks) {
-		return w + ' ' + d;
-	}
-	if (days) {
-		return d + ' ' + h;
-	}
-	if (hours) {
-		return h + ' ' + m;
-	}
-	if (minutes) {
-		return m + ' ' + s;
-	}
-	return s;
-}
-
-function rate (Bps)
-{
-	var speed = Math.floor(Bps / 1000);
-
-	if (speed <= 999.95) // 0 KBps to 999 K
-		return [ speed.toTruncFixed(0), 'KB/s' ].join(' ');
-
-	speed /= 1000;
-
-	if (speed <= 99.995) // 1 M to 99.99 M
-		return [ speed.toTruncFixed(2), 'MB/s' ].join(' ');
-	if (speed <= 999.95) // 100 M to 999.9 M
-		return [ speed.toTruncFixed(1), 'MB/s' ].join(' ');
-
-	// insane speeds
-	speed /= 1000;
-	return [ speed.toTruncFixed(2), 'GB/s' ].join(' ');
-}
-
-Number.prototype.toTruncFixed = function(place) {
-        var ret = Math.floor(this * Math.pow (10, place)) / Math.pow(10, place);
-        return ret.toFixed(place);
-};
-
-Number.prototype.toStringWithCommas = function() {
-    return this.toString().replace(/\B(?=(?:\d{3})+(?!\d))/g, ",");
-};
