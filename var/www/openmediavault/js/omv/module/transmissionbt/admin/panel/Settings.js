@@ -11,28 +11,26 @@
 // require("js/omv/form/SharedFolderComboBox.js")
 // require("js/omv/form/plugins/FieldInfo.js")
 
-// require("js/omv/module/transmissionbt/NavigationPanel.js")
-// require("js/omv/module/transmissionbt/admin/NavigationPanel.js")
-
-Ext.ns("OMV.Module.TransmissionBT");
+Ext.ns("OMV.Module.Services.TransmissionBT.Admin");
 
 /**
- * @class OMV.Module.TransmissionBT.SettingsPanel
+ * @class OMV.Module.Services.TransmissionBT.Admin.SettingsPanel
  * @derived OMV.FormPanelExt
  */
-OMV.Module.TransmissionBT.SettingsPanel = function(config) {
+OMV.Module.Services.TransmissionBT.Admin.SettingsPanel = function(config) {
 	var initialConfig = {
+		title: "Settings",
 		rpcService: "TransmissionBT",
 		rpcGetMethod: "getSettings",
 		rpcSetMethod: "setSettings"
 	};
 	Ext.apply(initialConfig, config);
-	OMV.Module.TransmissionBT.SettingsPanel.superclass.constructor.call(
+	OMV.Module.Services.TransmissionBT.Admin.SettingsPanel.superclass.constructor.call(
 	  this, initialConfig);
 };
-Ext.extend(OMV.Module.TransmissionBT.SettingsPanel, OMV.FormPanelExt, {
+Ext.extend(OMV.Module.Services.TransmissionBT.Admin.SettingsPanel, OMV.FormPanelExt, {
 	initComponent : function() {
-		OMV.Module.TransmissionBT.SettingsPanel.superclass.
+		OMV.Module.Services.TransmissionBT.Admin.SettingsPanel.superclass.
 		  initComponent.apply(this, arguments);
 		this.on("load", this._updateFormFields, this);
 	},
@@ -308,9 +306,4 @@ Ext.extend(OMV.Module.TransmissionBT.SettingsPanel, OMV.FormPanelExt, {
 			field.allowBlank = !checked;
 		}
 	}
-});
-OMV.NavigationPanelMgr.registerPanel("transmissionbt", "admin", {
-	cls: OMV.Module.TransmissionBT.SettingsPanel,
-	title: "Settings",
-	position: 10
 });

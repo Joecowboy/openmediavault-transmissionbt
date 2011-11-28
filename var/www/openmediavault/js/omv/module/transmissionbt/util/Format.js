@@ -6,9 +6,9 @@
  * To change this template use File | Settings | File Templates.
  */
 
-Ext.ns("OMV.Module.TransmissionBT.util");
+Ext.ns("OMV.Module.Services.TransmissionBT.util");
 
-OMV.Module.TransmissionBT.util.Format = function() {
+OMV.Module.Services.TransmissionBT.util.Format = function() {
 	f = function() {}
 	f.prototype = OMV.util.Format;
 	var o = function() {}

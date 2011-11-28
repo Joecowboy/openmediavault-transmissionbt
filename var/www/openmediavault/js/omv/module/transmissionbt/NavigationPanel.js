@@ -7,7 +7,8 @@
  */
 // require("js/omv/NavigationPanel.js")
 
-OMV.NavigationPanelMgr.registerCategory("transmissionbt", {
-	text: "Transmission",
-	position: 45
+OMV.NavigationPanelMgr.registerMenu("services", "transmissionbt", {
+	text: "BitTorrent",
+	icon: "images/transmissionbt.png",
+	position: 20
 });

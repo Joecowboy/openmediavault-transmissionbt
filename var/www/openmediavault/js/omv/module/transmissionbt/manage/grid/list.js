@@ -17,20 +17,19 @@
 
 // require("js/omv/module/transmissionbt/util/Format.js")
 
-// require("js/omv/module/transmissionbt/user/dialog/upload.js")
-// require("js/omv/module/transmissionbt/user/dialog/delete.js")
+// require("js/omv/module/transmissionbt/manage/dialog/upload.js")
+// require("js/omv/module/transmissionbt/manage/dialog/delete.js")
+// require("js/omv/module/transmissionbt/manage/dialog/addurl.js")
 
-// require("js/omv/module/transmissionbt/NavigationPanel.js")
-// require("js/omv/module/transmissionbt/user/NavigationPanel.js")
-
-Ext.ns("OMV.Module.TransmissionBT");
+Ext.ns("OMV.Module.Services.TransmissionBT.Manage");
 
 /**
- * @class OMV.Module.TransmissionBT.ManageGridPanel
+ * @class OMV.Module.Services.TransmissionBT.Manage.TorrentListGrid
  * @derived OMV.grid.TBarGridPanel
  */
-OMV.Module.TransmissionBT.ManageGridPanel = function(config) {
+OMV.Module.Services.TransmissionBT.Manage.TorrentListGrid = function(config) {
 	var initialConfig = {
+		title: "Torrent List",
 		autoReload: true,
 		reloadInterval: 10000,
 		hidePagingToolbar: true,
@@ -124,10 +123,10 @@ OMV.Module.TransmissionBT.ManageGridPanel = function(config) {
 		})
 	};
 	Ext.apply(initialConfig, config);
-	OMV.Module.TransmissionBT.ManageGridPanel.superclass.constructor.call(this,
+	OMV.Module.Services.TransmissionBT.Manage.TorrentListGrid.superclass.constructor.call(this,
 	  initialConfig);
 };
-Ext.extend(OMV.Module.TransmissionBT.ManageGridPanel, OMV.grid.TBarGridPanel, {
+Ext.extend(OMV.Module.Services.TransmissionBT.Manage.TorrentListGrid, OMV.grid.TBarGridPanel, {
 	initComponent : function() {
 		this.store = new OMV.data.Store({
 			autoLoad: true,
@@ -199,7 +198,7 @@ Ext.extend(OMV.Module.TransmissionBT.ManageGridPanel, OMV.grid.TBarGridPanel, {
 				action: 'bottom'
 			}]
 		});
-		OMV.Module.TransmissionBT.ManageGridPanel.superclass.initComponent.apply(this,
+		OMV.Module.Services.TransmissionBT.Manage.TorrentListGrid.superclass.initComponent.apply(this,
 		  arguments);
 	},
 
@@ -208,7 +207,7 @@ Ext.extend(OMV.Module.TransmissionBT.ManageGridPanel, OMV.grid.TBarGridPanel, {
     },
 
 	initToolbar : function() {
-		var tbar = OMV.Module.TransmissionBT.ManageGridPanel.superclass.initToolbar.apply(
+		var tbar = OMV.Module.Services.TransmissionBT.Manage.TorrentListGrid.superclass.initToolbar.apply(
 		  this);
 		tbar.insert(0, {
 			id: this.getId() + "-reload",
@@ -227,6 +226,14 @@ Ext.extend(OMV.Module.TransmissionBT.ManageGridPanel, OMV.grid.TBarGridPanel, {
 			scope: this
 		});
 		tbar.insert(2, {
+			id: this.getId() + "-add-url",
+			xtype: "button",
+			text: "Add URL",
+			icon: "images/add.png",
+			handler: this.cbAddURLBtnHdl,
+			scope: this
+		});
+		tbar.insert(3, {
 			id: this.getId() + "-delete",
 			xtype: "button",
 			text: "Delete",
@@ -235,7 +242,7 @@ Ext.extend(OMV.Module.TransmissionBT.ManageGridPanel, OMV.grid.TBarGridPanel, {
 			scope: this,
 			disabled: true
 		});
-		tbar.insert(3, {
+		tbar.insert(4, {
 			id: this.getId() + "-pause",
 			xtype: "button",
 			text: "Pause",
@@ -244,7 +251,7 @@ Ext.extend(OMV.Module.TransmissionBT.ManageGridPanel, OMV.grid.TBarGridPanel, {
 			scope: this,
 			disabled: true
 		});
-		tbar.insert(4, {
+		tbar.insert(5, {
 			id: this.getId() + "-resume",
 			xtype: "button",
 			text: "Resume",
@@ -271,7 +278,7 @@ Ext.extend(OMV.Module.TransmissionBT.ManageGridPanel, OMV.grid.TBarGridPanel, {
 	},
 
 	cbSelectionChangeHdl : function(model) {
-		OMV.Module.TransmissionBT.ManageGridPanel.superclass.cbSelectionChangeHdl.apply(this, arguments);
+		OMV.Module.Services.TransmissionBT.Manage.TorrentListGrid.superclass.cbSelectionChangeHdl.apply(this, arguments);
 		// Process additional buttons
 		this.toggleButtons();
 		this.toggleContextMenu();
@@ -460,6 +467,21 @@ Ext.extend(OMV.Module.TransmissionBT.ManageGridPanel, OMV.grid.TBarGridPanel, {
 		});
 		wnd.show();
 	},
+
+	/* ADD URL HANDLER */
+	cbAddURLBtnHdl : function() {
+		var wnd = new OMV.TransmissionBT.AddURLDialog({
+			title: "Add Torrent by URL",
+			listeners: {
+				success: function(wnd, url, start_download) {
+					//OMV.Ajax.request(this.doReload, this, "TransmissionBT", "add_url", [{ url: url, start_download: start_download }] );
+				},
+				scope: this
+			}
+		});
+		wnd.show();
+	},
+	/* /ADD URL HANDLER */
 
 	/* DELETION HANDLER */
 	cbDeleteBtnHdl : function() {
@@ -740,7 +762,7 @@ Ext.extend(OMV.Module.TransmissionBT.ManageGridPanel, OMV.grid.TBarGridPanel, {
 			new Ext.ProgressBar({
 				renderTo: id,
 				value: percentage,
-				text: OMV.Module.TransmissionBT.util.Format.bytesToSize(haveValid) + '/' + OMV.Module.TransmissionBT.util.Format.bytesToSize(totalSize) + ' (' + parseInt(percentage * 100) + '%)'
+				text: OMV.Module.Services.TransmissionBT.util.Format.bytesToSize(haveValid) + '/' + OMV.Module.Services.TransmissionBT.util.Format.bytesToSize(totalSize) + ' (' + parseInt(percentage * 100) + '%)'
 			});
 		}).defer(25);
 		return '<div id="' + id + '"></div>';
@@ -785,7 +807,7 @@ Ext.extend(OMV.Module.TransmissionBT.ManageGridPanel, OMV.grid.TBarGridPanel, {
 			val = "Unknown";
 			break;
 		default:
-			val = OMV.Module.TransmissionBT.util.Format.timeInterval(val);
+			val = OMV.Module.Services.TransmissionBT.util.Format.timeInterval(val);
 			break;
 		}
 		return val;
@@ -801,7 +823,7 @@ Ext.extend(OMV.Module.TransmissionBT.ManageGridPanel, OMV.grid.TBarGridPanel, {
 	},
 
 	rateRenderer : function(val, cell, record, row, col, store) {
-		val = OMV.Module.TransmissionBT.util.Format.rate(val);
+		val = OMV.Module.Services.TransmissionBT.util.Format.rate(val);
 		return val;
 	},
 
@@ -825,7 +847,4 @@ Ext.extend(OMV.Module.TransmissionBT.ManageGridPanel, OMV.grid.TBarGridPanel, {
 		return val;
 	}
 	/* /RENDERER */
-});
-OMV.NavigationPanelMgr.registerPanel("transmissionbt", "manage", {
-	cls: OMV.Module.TransmissionBT.ManageGridPanel
 });

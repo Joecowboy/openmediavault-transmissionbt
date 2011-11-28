@@ -9,26 +9,24 @@
 // require("js/omv/FormPanelExt.js")
 // require("js/omv/form/plugins/FieldInfo.js")
 
-// require("js/omv/module/transmissionbt/NavigationPanel.js")
-// require("js/omv/module/transmissionbt/admin/NavigationPanel.js")
-
-Ext.ns("OMV.Module.TransmissionBT");
+Ext.ns("OMV.Module.Services.TransmissionBT.Admin");
 
 /**
- * @class OMV.Module.TransmissionBT.FilesAndLocationsPanel
+ * @class OMV.Module.Services.TransmissionBT.Admin.FilesAndLocationsPanel
  * @derived OMV.FormPanelExt
  */
-OMV.Module.TransmissionBT.FilesAndLocationsPanel = function(config) {
+OMV.Module.Services.TransmissionBT.Admin.FilesAndLocationsPanel = function(config) {
 	var initialConfig = {
+		title: "Files and Locations",
 		rpcService: "TransmissionBT",
 		rpcGetMethod: "getLocationsAndFiles",
 		rpcSetMethod: "setLocationsAndFiles"
 	};
 	Ext.apply(initialConfig, config);
-	OMV.Module.TransmissionBT.FilesAndLocationsPanel.superclass.constructor.call(
+	OMV.Module.Services.TransmissionBT.Admin.FilesAndLocationsPanel.superclass.constructor.call(
 	  this, initialConfig);
 };
-Ext.extend(OMV.Module.TransmissionBT.FilesAndLocationsPanel, OMV.FormPanelExt, {
+Ext.extend(OMV.Module.Services.TransmissionBT.Admin.FilesAndLocationsPanel, OMV.FormPanelExt, {
 	getFormItems : function() {
 		return [{
 			xtype: "fieldset",
@@ -126,9 +124,4 @@ Ext.extend(OMV.Module.TransmissionBT.FilesAndLocationsPanel, OMV.FormPanelExt, {
 			}]
 		}];
 	}
-});
-OMV.NavigationPanelMgr.registerPanel("transmissionbt", "admin", {
-	cls: OMV.Module.TransmissionBT.FilesAndLocationsPanel,
-	title: "Files and Locations",
-	position: 30
 });

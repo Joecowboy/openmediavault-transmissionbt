@@ -13,6 +13,6 @@ Package: openmediavault-transmissionbt
 Architecture: all
 Depends: openmediavault, transmission-daemon (>= 2.42)
 Priority: optional
-Description: OpenMediaVault transmission-daemon (BitTorrent client) plugin
+Description: OpenMediaVault Transmission (BitTorrent client) plugin
  Transmission is a simple BitTorrent client that features a very simple and
  intuitive interface.

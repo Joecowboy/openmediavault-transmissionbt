@@ -9,26 +9,24 @@
 // require("js/omv/FormPanelExt.js")
 // require("js/omv/form/plugins/FieldInfo.js")
 
-// require("js/omv/module/transmissionbt/NavigationPanel.js")
-// require("js/omv/module/transmissionbt/admin/NavigationPanel.js")
-
-Ext.ns("OMV.Module.TransmissionBT");
+Ext.ns("OMV.Module.Services.TransmissionBT.Admin");
 
 /**
- * @class OMV.Module.TransmissionBT.SchedulingPanel
+ * @class OMV.Module.Services.TransmissionBT.Admin.SchedulingPanel
  * @derived OMV.FormPanelExt
  */
-OMV.Module.TransmissionBT.SchedulingPanel = function(config) {
+OMV.Module.Services.TransmissionBT.Admin.SchedulingPanel = function(config) {
 	var initialConfig = {
+		title: "Scheduling",
 		rpcService: "TransmissionBT",
 		rpcGetMethod: "getScheduling",
 		rpcSetMethod: "setScheduling"
 	};
 	Ext.apply(initialConfig, config);
-	OMV.Module.TransmissionBT.SchedulingPanel.superclass.constructor.call(
+	OMV.Module.Services.TransmissionBT.Admin.SchedulingPanel.superclass.constructor.call(
 	  this, initialConfig);
 };
-Ext.extend(OMV.Module.TransmissionBT.SchedulingPanel, OMV.FormPanelExt, {
+Ext.extend(OMV.Module.Services.TransmissionBT.Admin.SchedulingPanel, OMV.FormPanelExt, {
 	getFormItems : function() {
 		return [{xtype: "fieldset",
 			title: "General",
@@ -203,9 +201,4 @@ Ext.extend(OMV.Module.TransmissionBT.SchedulingPanel, OMV.FormPanelExt, {
 			}]
 		}];
 	}
-});
-OMV.NavigationPanelMgr.registerPanel("transmissionbt", "admin", {
-	cls: OMV.Module.TransmissionBT.SchedulingPanel,
-	title: "Scheduling",
-	position: 60
 });

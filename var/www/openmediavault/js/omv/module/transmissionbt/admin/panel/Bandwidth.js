@@ -9,26 +9,24 @@
 // require("js/omv/FormPanelExt.js")
 // require("js/omv/form/plugins/FieldInfo.js")
 
-// require("js/omv/module/transmissionbt/NavigationPanel.js")
-// require("js/omv/module/transmissionbt/admin/NavigationPanel.js")
-
-Ext.ns("OMV.Module.TransmissionBT");
+Ext.ns("OMV.Module.Services.TransmissionBT.Admin");
 
 /**
- * @class OMV.Module.TransmissionBT.BandwidthPanel
+ * @class OMV.Module.Services.TransmissionBT.Admin.BandwidthPanel
  * @derived OMV.FormPanelExt
  */
-OMV.Module.TransmissionBT.BandwidthPanel = function(config) {
+OMV.Module.Services.TransmissionBT.Admin.BandwidthPanel = function(config) {
 	var initialConfig = {
+		title: "Bandwidth",
 		rpcService: "TransmissionBT",
 		rpcGetMethod: "getBandwidth",
 		rpcSetMethod: "setBandwidth"
 	};
 	Ext.apply(initialConfig, config);
-	OMV.Module.TransmissionBT.BandwidthPanel.superclass.constructor.call(
+	OMV.Module.Services.TransmissionBT.Admin.BandwidthPanel.superclass.constructor.call(
 	  this, initialConfig);
 };
-Ext.extend(OMV.Module.TransmissionBT.BandwidthPanel, OMV.FormPanelExt, {
+Ext.extend(OMV.Module.Services.TransmissionBT.Admin.BandwidthPanel, OMV.FormPanelExt, {
 	getFormItems : function() {
 		return [{
 			xtype: "fieldset",
@@ -117,9 +115,4 @@ Ext.extend(OMV.Module.TransmissionBT.BandwidthPanel, OMV.FormPanelExt, {
 			}]
 		}];
 	}
-});
-OMV.NavigationPanelMgr.registerPanel("transmissionbt", "admin", {
-	cls: OMV.Module.TransmissionBT.BandwidthPanel,
-	title: "Bandwidth",
-	position: 40
 });

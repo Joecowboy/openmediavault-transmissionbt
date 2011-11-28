@@ -22,10 +22,4 @@
 
 // require("js/omv/module/transmissionbt/NavigationPanel.js")
 
-// require("js/omv/module/transmissionbt/admin/panel/Settings.js")
-// require("js/omv/module/transmissionbt/admin/panel/FilesAndLocations.js")
-// require("js/omv/module/transmissionbt/admin/panel/Peer.js")
-// require("js/omv/module/transmissionbt/admin/panel/Bandwidth.js")
-// require("js/omv/module/transmissionbt/admin/panel/Queueing.js")
-// require("js/omv/module/transmissionbt/admin/panel/Scheduling.js")
-
+// require("js/omv/module/transmissionbt/admin/panel.js")

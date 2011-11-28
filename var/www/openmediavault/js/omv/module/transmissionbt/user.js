@@ -21,4 +21,4 @@
 
 // require("js/omv/module/transmissionbt/NavigationPanel.js")
 
-// require("js/omv/module/transmissionbt/user/panel/Grid.js")
+// require("js/omv/module/transmissionbt/manage/panel.js")

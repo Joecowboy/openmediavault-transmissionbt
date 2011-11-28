@@ -8,8 +8,8 @@
 // require("js/omv/module/transmissionbt/NavigationPanel.js")
 
 // Register the menu.
-OMV.NavigationPanelMgr.registerMenu("transmissionbt", "manage", {
-	text: "Manage",
+OMV.NavigationPanelMgr.registerMenu("transmissionbt", "rss", {
+	text: "rss",
 	icon: "images/transmissionbt.png",
 	position: 20
 });
