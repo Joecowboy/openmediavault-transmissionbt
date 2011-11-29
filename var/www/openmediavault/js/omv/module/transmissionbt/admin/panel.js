@@ -49,6 +49,6 @@ Ext.extend(OMV.Module.Services.TransmissionBT.Admin.TabPanel, Ext.TabPanel, {
 });
 OMV.NavigationPanelMgr.registerPanel("services", "transmissionbt", {
 	cls: OMV.Module.Services.TransmissionBT.Admin.TabPanel,
-	title: "Admin",
+	title: "Server",
 	position: 20
 });
