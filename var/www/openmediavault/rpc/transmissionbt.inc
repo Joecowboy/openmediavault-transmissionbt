@@ -857,9 +857,20 @@ class TransmissionBTRpc extends OMVRpc {
 		$url = $data['url'];
 		$paused = !array_boolval($data, 'start_download');
 
-		$transmissionbt_rpc->add($url, '', array('paused' => $paused));
+		$result = $transmissionbt_rpc->add($url, '', array('paused' => $paused));
 
-		return 'success';
+		if (isset($result['result']))
+		{
+			if ($result['result'] == 'success')
+			{
+				return 'success';
+			}
+			else
+			{
+				throw new Exception($result['result']);
+			}
+		}
+		throw new Exception('Something went really wrong');
 	}
 
 	/**
