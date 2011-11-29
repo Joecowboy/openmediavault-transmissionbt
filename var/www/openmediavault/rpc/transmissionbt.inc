@@ -722,37 +722,62 @@ class TransmissionBTRpc extends OMVRpc {
 			  $xpath);
 		}
 
-		$transmissionbt_rpc = new Transmission();
-		$transmissionbt_rpc->return_as_array = true;
-		// Set authentication when needed
-		if (array_boolval($object, 'rpcauthenticationrequired') === true)
+		if (boolval($object['enable']) === true)
 		{
-			$transmissionbt_rpc->username = $object['rpcusername'];
-			$transmissionbt_rpc->password = $object['rpcpassword'];
+			$transmissionbt_rpc = new Transmission();
+			$transmissionbt_rpc->return_as_array = true;
+			// Set authentication when needed
+			if (array_boolval($object, 'rpcauthenticationrequired') === true)
+			{
+				$transmissionbt_rpc->username = $object['rpcusername'];
+				$transmissionbt_rpc->password = $object['rpcpassword'];
+			}
+
+			$torrents = $transmissionbt_rpc->get(array(), array(
+																'id',
+																'name',
+																'status',
+																'totalSize',
+																'haveValid',
+																'percentDone',
+																'eta',
+																'peersConnected',
+																'peersSendingToUs',
+																'rateDownload',
+																'rateUpload',
+																'addedDate',
+																'doneDate',
+																'uploadRatio',
+																'queuePosition',
+																)
+			);
+
+			$torrents = $torrents['arguments']['torrents'];
+
+			// Filter result
+			return $this->applyFilter($torrents, $start, $count, $sortField, $sortDir);
 		}
 
-		$torrents = $transmissionbt_rpc->get(array(), array(
-															'id',
-															'name',
-															'status',
-															'totalSize',
-															'haveValid',
-															'percentDone',
-															'eta',
-															'peersConnected',
-															'peersSendingToUs',
-															'rateDownload',
-															'rateUpload',
-															'addedDate',
-															'doneDate',
-															'uploadRatio',
-															'queuePosition',
-															)
+		/* Not Enabled Return dummy Result */
+		$torrents = array(array(
+				'id' => -1,
+				'name' => 'TransmissionBT is not running!',
+				'status' => -1,
+				'totalSize' => -1,
+				'haveValid' => -1,
+				'percentDone' => -1,
+				'eta' => -1,
+				'peersConnected' => -1,
+				'peersSendingToUs' => -1,
+				'rateDownload' => -1,
+				'rateUpload' => -1,
+				'addedDate' => -1,
+				'doneDate' => -1,
+				'uploadRatio' => -1,
+				'queuePosition' => -1,
+			)
 		);
 
-		$torrents = $torrents['arguments']['torrents'];
-
-		// Filter result
 		return $this->applyFilter($torrents, $start, $count, $sortField, $sortDir);
 	}
 
