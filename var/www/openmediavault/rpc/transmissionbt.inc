@@ -161,7 +161,7 @@ class TransmissionBTRpc extends OMVRpc {
 					"action":{"type":"string","enum":'.'["top","up","down","bottom"]}
 				}
 			}'),
-			"add_url" => array('{
+			"addUrl" => array('{
 				"type":"object",
 				"properties":{
 					"url":{"type":"string"},
@@ -827,7 +827,7 @@ class TransmissionBTRpc extends OMVRpc {
 		return $torrent;
 	}
 
-	function add_url($data) {
+	function addUrl($data) {
 		global $xmlConfig;
 		// Check permissions
 		$this->validateSession();
@@ -835,12 +835,7 @@ class TransmissionBTRpc extends OMVRpc {
 		//	throw new OMVException(OMVErrorMsg::E_RPC_SERVICE_INVALID_PERMISSION);
 		//}
 		$this->commitSession();
-		// Is file successfully upload?
-		if (!is_uploaded_file($_FILES['file']['tmp_name'])) {
-			throw new OMVException(OMVErrorMsg::E_MISC_FAILURE,
-			  "Invalid upload request");
-		}
-		//$this->validateParams(__METHOD__, func_get_args());
+		$this->validateParams(__METHOD__, func_get_args());
 
 		// Get configuration data
 		$xpath = "//services/transmissionbt";
@@ -862,7 +857,9 @@ class TransmissionBTRpc extends OMVRpc {
 		$url = $data['url'];
 		$paused = !array_boolval($data, 'start_download');
 
-		return $transmissionbt_rpc->add($url, '', array('paused' => $paused));
+		$transmissionbt_rpc->add($url, '', array('paused' => $paused));
+
+		return 'success';
 	}
 
 	/**

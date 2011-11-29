@@ -473,13 +473,25 @@ Ext.extend(OMV.Module.Services.TransmissionBT.Manage.TorrentListGrid, OMV.grid.T
 		var wnd = new OMV.TransmissionBT.AddURLDialog({
 			title: "Add Torrent by URL",
 			listeners: {
-				success: function(wnd, url, start_download) {
-					//OMV.Ajax.request(this.doReload, this, "TransmissionBT", "add_url", [{ url: url, start_download: start_download }] );
+				success: function(wnd, url, startDownload) {
+					this.doAddURL(url, startDownload);
 				},
 				scope: this
 			}
 		});
 		wnd.show();
+	},
+	doAddURL : function(url, startDownload) {
+		OMV.Ajax.request(this.cbAddURLHdl, this, "TransmissionBT", "addUrl", [{ url: String(url), start_download: Boolean(startDownload) }] );
+	},
+	cbAddURLHdl : function(id, response, error) {
+		if (error !== null) {
+			// Display error message
+			OMV.MessageBox.error(null, error);
+		} else {
+			OMV.MessageBox.hide();
+			this.doReload();
+		}
 	},
 	/* /ADD URL HANDLER */
 
