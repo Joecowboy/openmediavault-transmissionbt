@@ -58,7 +58,6 @@ Ext.extend(OMV.Module.Services.TransmissionBT.Admin.SettingsPanel, OMV.FormPanel
 				name: "sharedfolderref",
 				hiddenName: "sharedfolderref",
 				fieldLabel: "Shared folder",
-				allowNone: true,
 				plugins: [ OMV.form.plugins.FieldInfo ],
 				infoText: "Make sure the group 'debian-transmission' has read/write access to the shared folder."
 			},{
@@ -171,9 +170,8 @@ Ext.extend(OMV.Module.Services.TransmissionBT.Admin.SettingsPanel, OMV.FormPanel
 			}]
 		},{
 			xtype: "fieldset",
-			title: "Remote administration settings",
+			title: "RPC/WebUI Settings",
 			defaults: {
-//				anchor: "100%",
 				labelSeparator: ""
 			},
 			items: [{
@@ -188,16 +186,16 @@ Ext.extend(OMV.Module.Services.TransmissionBT.Admin.SettingsPanel, OMV.FormPanel
 				allowBlank: false,
 				value: 9091,
 				plugins: [ OMV.form.plugins.FieldInfo ],
-				infoText: "Port to open and listen for RPC requests on."
+				infoText: "Port to open and listen for RPC/Web requests on."
 			},{
 				xtype: "textfield",
 				name: "rpcurl",
-				fieldLabel: "uri",
+				fieldLabel: "Uri",
 				vtype: "transmissionbturi",
 				allowBlank: false,
 				value: 'transmission',
 				plugins: [ OMV.form.plugins.FieldInfo ],
-				infoText: "Used for client authentication."
+				infoText: "Url to access RPC (http://localhost/<URI>/(rpc|web)."
 			},{
 				xtype: "checkbox",
 				name: "rpcauthenticationrequired",
@@ -312,7 +310,7 @@ Ext.extend(OMV.Module.Services.TransmissionBT.Admin.SettingsPanel, OMV.FormPanel
 		}
 		// Update 'sharedfolderref' field settings
 		field = this.findFormField("enable");
-		var checked = field.checked;
+		checked = field.checked;
 		field = this.findFormField("sharedfolderref");
 		if (!Ext.isEmpty(field)) {
 			field.allowBlank = !checked;
