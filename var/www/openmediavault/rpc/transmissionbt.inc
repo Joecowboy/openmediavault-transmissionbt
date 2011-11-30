@@ -40,7 +40,7 @@ class TransmissionBTRpc extends OMVRpc {
 					"pexenabled":{"type":"boolean"},
 					"dhtenabled":{"type":"boolean"},
 					"encryption":{"type":"integer","enum":[0,1,2]},
-					"rpcurl":{"type":"string","format":"regex","pattern":"/^[-a-zA-Z0-9]$"},
+					"rpcurl":{"type":"string","format":"regex","pattern":"/^[a-z0-9]+$/i"},
 					"rpcport":{"type":"integer","minimum":1024,"maximum":65535},
 					"rpcauthenticationrequired":{"type":"boolean"},
 					"rpcusername":{"type":"string"},
@@ -195,6 +195,7 @@ class TransmissionBTRpc extends OMVRpc {
 		$object['dhtenabled'] = boolval($object['dhtenabled']);
 		$object['encryption'] = intval($object['encryption']);
 		$object['rpcport'] = intval($object['rpcport']);
+		$object['rpcurl'] = trim($object['rpcurl'], '/');
 		$object['rpcauthenticationrequired'] = boolval($object['rpcauthenticationrequired']);
 		$object['blocklistenabled'] = boolval($object['blocklistenabled']);
 		$object['blocklistsyncenabled'] = boolval($object['blocklistsyncenabled']);
@@ -721,42 +722,47 @@ class TransmissionBTRpc extends OMVRpc {
 			  $xpath);
 		}
 
-		if (boolval($object['enable']) === true)
+
+		try
 		{
-			$transmissionbt_rpc = new Transmission();
-			$transmissionbt_rpc->return_as_array = true;
-			// Set authentication when needed
-			if (array_boolval($object, 'rpcauthenticationrequired') === true)
+			if (boolval($object['enable']) === true)
 			{
-				$transmissionbt_rpc->username = $object['rpcusername'];
-				$transmissionbt_rpc->password = $object['rpcpassword'];
+				$transmissionbt_rpc = new Transmission();
+				$transmissionbt_rpc->return_as_array = true;
+				// Set authentication when needed
+				if (array_boolval($object, 'rpcauthenticationrequired') === true)
+				{
+					$transmissionbt_rpc->username = $object['rpcusername'];
+					$transmissionbt_rpc->password = $object['rpcpassword'];
+				}
+
+				$torrents = $transmissionbt_rpc->get(array(), array(
+																	'id',
+																	'name',
+																	'status',
+																	'totalSize',
+																	'haveValid',
+																	'percentDone',
+																	'eta',
+																	'peersConnected',
+																	'peersSendingToUs',
+																	'rateDownload',
+																	'rateUpload',
+																	'addedDate',
+																	'doneDate',
+																	'uploadRatio',
+																	'queuePosition',
+																	)
+				);
+
+				$torrents = $torrents['arguments']['torrents'];
+
+				// Filter result
+				return $this->applyFilter($torrents, $start, $count, $sortField, $sortDir);
 			}
-
-			$torrents = $transmissionbt_rpc->get(array(), array(
-																'id',
-																'name',
-																'status',
-																'totalSize',
-																'haveValid',
-																'percentDone',
-																'eta',
-																'peersConnected',
-																'peersSendingToUs',
-																'rateDownload',
-																'rateUpload',
-																'addedDate',
-																'doneDate',
-																'uploadRatio',
-																'queuePosition',
-																)
-			);
-
-			$torrents = $torrents['arguments']['torrents'];
-
-			// Filter result
-			return $this->applyFilter($torrents, $start, $count, $sortField, $sortDir);
 		}
-
+		catch (Exception $e) {}
+		
 		/* Not Enabled Return dummy Result */
 		$torrents = array(array(
 				'id' => -1,

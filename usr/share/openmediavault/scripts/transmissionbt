@@ -88,7 +88,7 @@ xmlstarlet sel -t -m "//services/transmissionbt" \
   -o "," -n \
   -v "concat('&quot;rpc-password&quot;: &quot;',rpcpassword,'&quot;,')" -n \
   -v "concat('&quot;rpc-port&quot;: ',rpcport,',')" -n \
-  -v "concat('&quot;rpc-url&quot;: ',rpcurl,',')" -n \
+  -v "concat('&quot;rpc-url&quot;: &quot;',rpcurl,'&quot;,')" -n \
   -v "concat('&quot;rpc-username&quot;: &quot;',rpcusername,'&quot;,')" -n \
   -o "&quot;rpc-whitelist&quot;: &quot;${OMV_TRANSMISSIONBT_RPCWHITELIST}&quot;," -n \
   -o "&quot;rpc-whitelist-enabled&quot;: ${OMV_TRANSMISSIONBT_RPCWHITELISTENABLED}," -n \

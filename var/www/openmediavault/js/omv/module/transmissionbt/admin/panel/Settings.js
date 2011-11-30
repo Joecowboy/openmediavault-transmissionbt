@@ -315,7 +315,7 @@ Ext.extend(OMV.Module.Services.TransmissionBT.Admin.SettingsPanel, OMV.FormPanel
 Ext.apply(Ext.form.VTypes, {
 
     transmissionbturi: function(v) {
-        return /^[-a-zA-Z0-9]$/.test(v);
+        return /^[a-z0-9]+$/i.test(v);
     },
     transmissionbturiText: "Invalid Uri.",
     transmissionbturiMask: /[a-z0-9\-_]/i
