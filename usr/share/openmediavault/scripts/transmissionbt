@@ -81,6 +81,7 @@ xmlstarlet sel -t -m "//services/transmissionbt" \
   -i "utp-enabled[. = '1']" -o "true" -b \
   -o "," -n \
   -v "concat('&quot;message-level&quot;: ',message-level,',')" -n \
+  -v "concat('&quot;cache-size-mb&quot;: ',cache-size-mb,',')" -n \
   -v "concat('&quot;rpc-enabled&quot;: ','true',',')" -n \
   -o "&quot;rpc-authentication-required&quot;: " \
   -i "rpcauthenticationrequired[. = '0']" -o "false" -b \

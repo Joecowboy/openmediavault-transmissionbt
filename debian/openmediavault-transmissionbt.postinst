@@ -219,6 +219,10 @@ case "$1" in
 			omv_config_add_element "//services/transmissionbt" "rpcurl" "/transmission/"
 		fi
 
+		if ! omv_config_exists "//services/transmissionbt/cache-size-mb"; then
+			omv_config_add_element "//services/transmissionbt" "cache-size-mb" "4"
+		fi
+
 		########################################################################
 		# Import system group 'debian-transmission' created by the
 		# transmission-daemon package.

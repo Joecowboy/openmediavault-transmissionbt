@@ -54,7 +54,8 @@ class TransmissionBTRpc extends OMVRpc {
 					"lpd-enabled":{"type":"boolean"},
 					"scrape-paused-torrents-enabled":{"type":"boolean"},
 					"utp-enabled":{"type":"boolean"},
-					"message-level":{"type":"integer","enum":[0,1,2,3]}
+					"message-level":{"type":"integer","enum":[0,1,2,3]},
+					"cache-size-mb":{"type":"integer"}
 				}
 			}'),
 			"setLocationsAndFiles" => array('{
@@ -205,6 +206,7 @@ class TransmissionBTRpc extends OMVRpc {
 		$object['scrape-paused-torrents-enabled'] = boolval($object['scrape-paused-torrents-enabled']);
 		$object['utp-enabled'] = boolval($object['utp-enabled']);
 		$object['message-level'] = intval($object['message-level']);
+		$object['cache-size-mb'] = intval($object['cache-size-mb']);
 		return $object;
 	}
 
@@ -252,6 +254,7 @@ class TransmissionBTRpc extends OMVRpc {
 			"scrape-paused-torrents-enabled" => array_boolval($data,'scrape-paused-torrents-enabled'),
 			"utp-enabled" => array_boolval($data,'utp-enabled'),
 			"message-level" => $data['message-level'],
+			"cache-size-mb" => $data['cache-size-mb'],
 		);
 		// Set configuration object
 		if (FALSE === $xmlConfig->replace($xpath, $object)) {

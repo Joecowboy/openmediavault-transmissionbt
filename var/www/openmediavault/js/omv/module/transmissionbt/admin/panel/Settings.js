@@ -158,6 +158,16 @@ Ext.extend(OMV.Module.Services.TransmissionBT.Admin.SettingsPanel, OMV.FormPanel
 				value: 18,
 				plugins: [ OMV.form.plugins.FieldInfo ],
 				infoText: "Sets transmission's file mode creation mask."
+			},{
+				xtype: "numberfield",
+				name: "cache-size-mb",
+				fieldLabel: "Cache Size",
+				allowDecimals: false,
+				allowNegative: false,
+				allowBlank: false,
+				value: 4,
+				plugins: [ OMV.form.plugins.FieldInfo ],
+				infoText: "The cache is used to help batch disk IO together, so increasing the cache size can be used to reduce the number of disk reads and writes."
 			}]
 		},{
 			xtype: "fieldset",
