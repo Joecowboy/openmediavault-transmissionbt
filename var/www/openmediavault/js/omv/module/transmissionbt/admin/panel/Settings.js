@@ -195,7 +195,7 @@ Ext.extend(OMV.Module.Services.TransmissionBT.Admin.SettingsPanel, OMV.FormPanel
 				allowBlank: false,
 				value: 'transmission',
 				plugins: [ OMV.form.plugins.FieldInfo ],
-				infoText: "Url to access RPC (http://localhost/<URI>/(rpc|web)."
+				infoText: "Url to access RPC (http://localhost/&lt;URI&gt;/(rpc|web)."
 			},{
 				xtype: "checkbox",
 				name: "rpcauthenticationrequired",
