@@ -764,6 +764,8 @@ class TransmissionBTRpc extends OMVRpc {
 					'queuePosition' => -1,
 				)
 			);
+
+			return $this->applyFilter($torrents, $start, $count, $sortField, $sortDir);
 		}
 	}
 
