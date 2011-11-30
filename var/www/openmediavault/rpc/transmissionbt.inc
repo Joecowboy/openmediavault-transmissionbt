@@ -722,12 +722,14 @@ class TransmissionBTRpc extends OMVRpc {
 			  $xpath);
 		}
 
-
 		try
 		{
 			if (boolval($object['enable']) === true)
 			{
 				$transmissionbt_rpc = new Transmission();
+
+				$transmissionbt_rpc->url = 'http://localhost:'.$object['rpcport'].$object['rpcurl'].'rpc';
+
 				$transmissionbt_rpc->return_as_array = true;
 				// Set authentication when needed
 				if (array_boolval($object, 'rpcauthenticationrequired') === true)
@@ -761,8 +763,11 @@ class TransmissionBTRpc extends OMVRpc {
 				return $this->applyFilter($torrents, $start, $count, $sortField, $sortDir);
 			}
 		}
-		catch (Exception $e) {}
-		
+		catch (Exception $e) {
+
+			throw new Exception($e->getMessage());
+		}
+
 		/* Not Enabled Return dummy Result */
 		$torrents = array(array(
 				'id' => -1,
