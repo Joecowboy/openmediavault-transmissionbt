@@ -40,7 +40,7 @@ class TransmissionBTRpc extends OMVRpc {
 					"pexenabled":{"type":"boolean"},
 					"dhtenabled":{"type":"boolean"},
 					"encryption":{"type":"integer","enum":[0,1,2]},
-					"rpcenabled":{"type":"boolean"},
+					"rpcurl":{"type":"string","format":"regex","pattern":"/^[-a-zA-Z0-9]$"},
 					"rpcport":{"type":"integer","minimum":1024,"maximum":65535},
 					"rpcauthenticationrequired":{"type":"boolean"},
 					"rpcusername":{"type":"string"},
@@ -194,7 +194,6 @@ class TransmissionBTRpc extends OMVRpc {
 		$object['pexenabled'] = boolval($object['pexenabled']);
 		$object['dhtenabled'] = boolval($object['dhtenabled']);
 		$object['encryption'] = intval($object['encryption']);
-		$object['rpcenabled'] = boolval($object['rpcenabled']);
 		$object['rpcport'] = intval($object['rpcport']);
 		$object['rpcauthenticationrequired'] = boolval($object['rpcauthenticationrequired']);
 		$object['blocklistenabled'] = boolval($object['blocklistenabled']);
@@ -236,7 +235,7 @@ class TransmissionBTRpc extends OMVRpc {
 			"pexenabled" => array_boolval($data, 'pexenabled'),
 			"dhtenabled" => array_boolval($data, 'dhtenabled'),
 			"encryption" => $data['encryption'],
-			"rpcenabled" => array_boolval($data, 'rpcenabled'),
+			"rpcurl" => '/' . $data['rpcurl'] . '/',
 			"rpcport" => $data['rpcport'],
 			"rpcauthenticationrequired" => array_boolval($data,'rpcauthenticationrequired'),
 			"rpcusername" => $data['rpcusername'],

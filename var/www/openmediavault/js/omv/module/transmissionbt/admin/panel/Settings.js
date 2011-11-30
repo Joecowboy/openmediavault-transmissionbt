@@ -167,13 +167,6 @@ Ext.extend(OMV.Module.Services.TransmissionBT.Admin.SettingsPanel, OMV.FormPanel
 				labelSeparator: ""
 			},
 			items: [{
-				xtype: "checkbox",
-				name: "rpcenabled",
-				fieldLabel: "Enable",
-				checked: true,
-				inputValue: 1,
-				boxLabel: "Enable remote administration."
-			},{
 				xtype: "numberfield",
 				name: "rpcport",
 				fieldLabel: "Port",
@@ -186,6 +179,15 @@ Ext.extend(OMV.Module.Services.TransmissionBT.Admin.SettingsPanel, OMV.FormPanel
 				value: 9091,
 				plugins: [ OMV.form.plugins.FieldInfo ],
 				infoText: "Port to open and listen for RPC requests on."
+			},{
+				xtype: "textfield",
+				name: "rpcurl",
+				fieldLabel: "uri",
+				vtype: "transmissionbturi",
+				allowBlank: false,
+				value: 'transmission',
+				plugins: [ OMV.form.plugins.FieldInfo ],
+				infoText: "Used for client authentication."
 			},{
 				xtype: "checkbox",
 				name: "rpcauthenticationrequired",
@@ -306,4 +308,16 @@ Ext.extend(OMV.Module.Services.TransmissionBT.Admin.SettingsPanel, OMV.FormPanel
 			field.allowBlank = !checked;
 		}
 	}
+});
+
+
+
+Ext.apply(Ext.form.VTypes, {
+
+    transmissionbturi: function(v) {
+        return /^[-a-zA-Z0-9]$/.test(v);
+    },
+    transmissionbturiText: "Invalid Uri.",
+    transmissionbturiMask: /[a-z0-9\-_]/i
+
 });

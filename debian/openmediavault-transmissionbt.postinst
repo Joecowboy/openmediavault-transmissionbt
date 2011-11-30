@@ -211,6 +211,14 @@ case "$1" in
 			omv_config_add_element "//services/transmissionbt" "umask" "18"
 		fi
 
+		if omv_config_exists "//services/transmissionbt/rpcenabled"; then
+			omv_config_delete "//services/transmissionbt/rpcenabled"
+		fi
+
+		if ! omv_config_exists "//services/transmissionbt/rpcurl"; then
+			omv_config_add_element "//services/transmissionbt" "rpcurl" "/transmission/"
+		fi
+
 		########################################################################
 		# Import system group 'debian-transmission' created by the
 		# transmission-daemon package.

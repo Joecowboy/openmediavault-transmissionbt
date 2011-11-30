@@ -1,4 +1,12 @@
-openmediavault-transmissionbt (0.2.8.3) stable; urgency=low
+openmediavault-transmissionbt (0.2.8.4) unstable; urgency=low
+
+  * Github Issue #27 - Be able to add torrents by URL
+  * Github Issue #28 - Disable "Manage", when transmissionbt is not enabled
+  * Github Issue #29 - Transmission Web UI still running even with the checkbox not ticked
+
+ -- Marcel Beck <marcel.beck@mbeck.org>  Wed, 30 Nov 2011 19:20:40 +0100
+
+openmediavault-transmissionbt (0.2.8.3) unstable; urgency=low
 
   * Fixed Trap
   * Just reload transmission-daemon
@@ -6,20 +14,20 @@ openmediavault-transmissionbt (0.2.8.3) stable; urgency=low
 
  -- Marcel Beck <marcel.beck@mbeck.org>  Mon, 28 Nov 2011 21:25:46 +0100
 
-openmediavault-transmissionbt (0.2.8.2) stable; urgency=low
+openmediavault-transmissionbt (0.2.8.2) unstable; urgency=low
 
   * Github Issue #26 - Upgrade Problem from <0.2.8 to >=0.2.8
 
  -- Marcel Beck <marcel.beck@mbeck.org>  Mon, 28 Nov 2011 00:20:00 +0100
 
-openmediavault-transmissionbt (0.2.8.1) stable; urgency=low
+openmediavault-transmissionbt (0.2.8.1) unstable; urgency=low
 
   * Github Issue #22 - Dont restart transmission-daemon after update, only config update is needed
   * Github Issue #23 - Add Queue Managment
 
  -- Marcel Beck <marcel.beck@mbeck.org>  Sun, 27 Nov 2011 23:25:44 +0100
 
-openmediavault-transmissionbt (0.2.8) stable; urgency=low
+openmediavault-transmissionbt (0.2.8) unstable; urgency=low
 
   * Github Issue #3 - Possibility to mange Torrents inside OMV
   * Github Issue #18 - Force new transmission-daemon
@@ -42,19 +50,19 @@ openmediavault-transmissionbt (0.2.7.2) stable; urgency=low
 
  -- Marcel Beck <marcel.beck@mbeck.org>  Tue, 22 Nov 2011 21:34:00 +0100
 
-openmediavault-transmissionbt (0.2.7.1) stable; urgency=low
+openmediavault-transmissionbt (0.2.7.1) unstable; urgency=low
 
   * Github Issue #13 - umask Setting
 
  -- Marcel Beck <marcel.beck@mbeck.org>  Sun, 20 Nov 2011 15:53:45 +0100
 
-openmediavault-transmissionbt (0.2.7) stable; urgency=low
+openmediavault-transmissionbt (0.2.7) unstable; urgency=low
 
   * Github Issue #2 - Add Scheduling Section
 
  -- Marcel Beck <marcel.beck@mbeck.org>  Sun, 20 Nov 2011 14:47:05 +0100
 
-openmediavault-transmissionbt (0.2.6.1) stable; urgency=low
+openmediavault-transmissionbt (0.2.6.1) unstable; urgency=low
 
   * Github Issue #12 - Can't stop transmission
 

@@ -9,9 +9,9 @@
 Ext.ns("OMV.Module.Services.TransmissionBT.util");
 
 OMV.Module.Services.TransmissionBT.util.Format = function() {
-	f = function() {}
+	var f = function() {};
 	f.prototype = OMV.util.Format;
-	var o = function() {}
+	var o = function() {};
 	Ext.extend(o, f, function() {
 		return {
 			bytesToSize : function(bytes) {
@@ -26,12 +26,12 @@ OMV.Module.Services.TransmissionBT.util.Format = function() {
 						days    = Math.floor ((seconds % 604800) / 86400),
 						hours   = Math.floor ((seconds % 86400) / 3600),
 						minutes = Math.floor ((seconds % 3600) / 60),
-						seconds = Math.floor (seconds % 60),
+						secondsLeft = Math.floor (seconds % 60),
 						w = weeks   + 'w',
 						d = days    + 'd',
 						h = hours   + 'h',
 						m = minutes + 'm',
-						s = seconds + 's';
+						s = secondsLeft + 's';
 
 				if (weeks) {
 					return w + ' ' + d;
