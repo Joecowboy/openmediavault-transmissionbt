@@ -166,7 +166,7 @@ Ext.extend(OMV.Module.Services.TransmissionBT.Admin.SettingsPanel, OMV.FormPanel
 				allowBlank: false,
 				value: 4,
 				plugins: [ OMV.form.plugins.FieldInfo ],
-				infoText: "The cache is used to help batch disk IO together, so increasing the cache size can be used to reduce the number of disk reads and writes."
+				infoText: "Cache size (in Mb) to reduce the number of disk reads and writes."
 			}]
 		},{
 			xtype: "fieldset",
