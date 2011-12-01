@@ -128,7 +128,7 @@ class TransmissionBTRpc extends OMVRpc {
 					"days-saturday":{"type":"boolean"},
 					"idle-seeding-limit":{"type":"integer","minimum":0},
 					"idle-seeding-limit-enabled":{"type":"boolean"},
-					"ratio-limit":{"type":"integer","minimum":0},
+					"ratio-limit":{"type":"number","minimum":0},
 					"ratio-limit-enabled":{"type":"boolean"}
 				}
 			}'),
@@ -170,6 +170,11 @@ class TransmissionBTRpc extends OMVRpc {
 				}
 			}'),
 		);
+	}
+
+	function getStatus() {
+		$TransmissionBTModule = new TransmissionBTModule();
+		return array($TransmissionBTModule->getStatus());
 	}
 
 	/**
@@ -716,57 +721,32 @@ class TransmissionBTRpc extends OMVRpc {
 		// Validate method parameters
 		$this->validateParams(__METHOD__, func_get_args());
 
-		try
-		{
-			$transmissionbt_rpc = $this->factoryTransmission();
+		$transmissionbt_rpc = $this->factoryTransmission();
 
-			$torrents = $transmissionbt_rpc->get(array(), array(
-																'id',
-																'name',
-																'status',
-																'totalSize',
-																'haveValid',
-																'percentDone',
-																'eta',
-																'peersConnected',
-																'peersSendingToUs',
-																'rateDownload',
-																'rateUpload',
-																'addedDate',
-																'doneDate',
-																'uploadRatio',
-																'queuePosition',
-																)
-			);
+		$torrents = $transmissionbt_rpc->get(array(), array(
+															'id',
+															'name',
+															'status',
+															'totalSize',
+															'haveValid',
+															'percentDone',
+															'eta',
+															'peersConnected',
+															'peersSendingToUs',
+															'rateDownload',
+															'rateUpload',
+															'addedDate',
+															'doneDate',
+															'uploadRatio',
+															'queuePosition',
+															)
+		);
 
-			$torrents = $torrents['arguments']['torrents'];
+		$torrents = $torrents['arguments']['torrents'];
 
-			// Filter result
-			return $this->applyFilter($torrents, $start, $count, $sortField, $sortDir);
-		}
-		catch (Exception $e) {
-			/* Not Enabled Return dummy Result */
-			$torrents = array(array(
-					'id' => -1,
-					'name' => 'TransmissionBT is not running!',
-					'status' => -1,
-					'totalSize' => -1,
-					'haveValid' => -1,
-					'percentDone' => -1,
-					'eta' => -1,
-					'peersConnected' => -1,
-					'peersSendingToUs' => -1,
-					'rateDownload' => -1,
-					'rateUpload' => -1,
-					'addedDate' => -1,
-					'doneDate' => -1,
-					'uploadRatio' => -1,
-					'queuePosition' => -1,
-				)
-			);
+		// Filter result
+		return $this->applyFilter($torrents, $start, $count, $sortField, $sortDir);
 
-			return $this->applyFilter($torrents, $start, $count, $sortField, $sortDir);
-		}
 	}
 
 	/**

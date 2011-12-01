@@ -30,7 +30,7 @@ Ext.ns("OMV.Module.Services.TransmissionBT.Manage");
 OMV.Module.Services.TransmissionBT.Manage.TorrentListGrid = function(config) {
 	var initialConfig = {
 		title: "Torrent List",
-		autoReload: true,
+		autoReload: false,
 		reloadInterval: 10000,
 		hidePagingToolbar: true,
 		hideAdd: true,
@@ -129,7 +129,7 @@ OMV.Module.Services.TransmissionBT.Manage.TorrentListGrid = function(config) {
 Ext.extend(OMV.Module.Services.TransmissionBT.Manage.TorrentListGrid, OMV.grid.TBarGridPanel, {
 	initComponent : function() {
 		this.store = new OMV.data.Store({
-			autoLoad: true,
+			autoLoad: false,
 			remoteSort: false,
 			proxy: new OMV.data.DataProxy("TransmissionBT", "getList",
 				[ [ "userdefined" ] ]),
@@ -198,13 +198,49 @@ Ext.extend(OMV.Module.Services.TransmissionBT.Manage.TorrentListGrid, OMV.grid.T
 				action: 'bottom'
 			}]
 		});
+
+		OMV.Ajax.request(this.enableReload, this, "TransmissionBT", "getStatus");
+
 		OMV.Module.Services.TransmissionBT.Manage.TorrentListGrid.superclass.initComponent.apply(this,
 		  arguments);
 	},
 
+	enableReload : function(id, response, error) {
+		if (error !== null) {
+			OMV.MessageBox.error(null, error);
+		} else {
+			if (!response[0].running) {
+				this.autoReload = false;
+
+				if (!Ext.isEmpty(this.reloadTask)) {
+					Ext.TaskMgr.stop(this.reloadTask);
+					delete this.reloadTask;
+				}
+			} else {
+				this.autoReload = true;
+				if (Ext.isEmpty(this.reloadTask)) {
+					this.reloadTask = Ext.TaskMgr.start({
+						run: this.doReload,
+						scope: this,
+						interval: this.reloadInterval
+					});
+				}
+				this.on("beforedestroy", function(c) {
+					if (!Ext.isEmpty(this.reloadTask)) {
+						Ext.TaskMgr.stop(this.reloadTask);
+						delete this.reloadTask;
+					}
+				}, this);
+				this.store.reload();
+				this.toggleButtons();
+				this.toggleContextMenu();
+			}
+		}
+	},
+
 	getContextMenu : function(){
-        return this.contextMenu;
-    },
+		return this.contextMenu;
+	},
 
 	initToolbar : function() {
 		var tbar = OMV.Module.Services.TransmissionBT.Manage.TorrentListGrid.superclass.initToolbar.apply(
@@ -440,11 +476,7 @@ Ext.extend(OMV.Module.Services.TransmissionBT.Manage.TorrentListGrid, OMV.grid.T
 	 * Reload the grid content.
 	 */
 	doReload : function() {
-		if (this.mode === "remote") {
-			this.store.reload();
-			this.toggleButtons();
-			this.toggleContextMenu();
-		}
+		OMV.Ajax.request(this.enableReload, this, "TransmissionBT", "getStatus");
 	},
 
 	cbReloadBtnHdl : function() {
