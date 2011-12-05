@@ -1,3 +1,11 @@
+openmediavault-transmissionbt (0.2.8.5) stable; urgency=low
+
+  * Github Issue #30 - Error with jobs tab and autorefresh after update to 0.2.8.3
+  * Github Issue #31 - cache-size-mb configurable
+  * Github Issue #32 - Be able to set ratio with one decimal
+
+ -- Marcel Beck <marcel.beck@mbeck.org>  Mon, 05 Dec 2011 22:47:31 +0100
+
 openmediavault-transmissionbt (0.2.8.4) unstable; urgency=low
 
   * Github Issue #27 - Be able to add torrents by URL
