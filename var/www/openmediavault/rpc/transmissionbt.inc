@@ -27,7 +27,7 @@ require_once("openmediavault/util.inc");
 require_once("openmediavault/rpc.inc");
 require_once("openmediavault/notify.inc");
 
-require_once("openmediavault/transmission.inc");
+require_once("transmission/rpc.inc");
 
 class TransmissionBTRpc extends OMVRpc {
 	public function __construct() {
