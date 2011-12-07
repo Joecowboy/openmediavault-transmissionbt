@@ -923,7 +923,7 @@ class TransmissionBTRpc extends OMVRpc {
 			  $xpath);
 		}
 
-		$transmissionbt_rpc = new Transmission();
+		$transmissionbt_rpc = new Transmission_RPC();
 
 		$transmissionbt_rpc->url = 'http://localhost:'.$object['rpcport'].$object['rpcurl'].'rpc';
 
