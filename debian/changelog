@@ -1,3 +1,16 @@
+openmediavault-transmissionbt (0.2.8.8) stable; urgency=high
+
+  * Fixed Last Package (Official 0.2.8.6)
+  * Update Copyright
+
+ -- Marcel Beck <marcel.beck@mbeck.org>  Mon, 02 Jan 2012 15:57:04 +0100
+
+openmediavault-transmissionbt (0.2.8.7) stable; urgency=low
+
+  * Fix config import issues
+
+ -- Volker Theile <volker.theile@openmediavault.org>  Wed, 28 Dec 2011 12:44:17 +0100
+
 openmediavault-transmissionbt (0.2.8.6) stable; urgency=low
 
   * Code Style
