@@ -51,6 +51,11 @@ xmlstarlet sel -t -m "//services/transmissionbt" \
 xmlstarlet sel -t -m "//services/transmissionbt" \
   -o "{" -n \
   -o "&quot;download-dir&quot;: &quot;" ${OMV_XMLSTARLET_GET_SHAREDFOLDER_PATH} -o "/" -v modules/locationsandfiles/download-dir -o "&quot;," -n \
+  -o "&quot;script-torrent-done-enabled&quot;: " \
+  -i "script-torrent-done-enabled[. = '0']" -o "false" -b \
+  -i "script-torrent-done-enabled[. = '1']" -o "true" -b \
+  -o "," -n \
+  -v "concat('&quot;script-torrent-done-filename&quot;: &quot;',script-torrent-done-filename,'&quot;,')" -n \
   -v "concat('&quot;encryption&quot;: ',encryption,',')" -n \
   -o "&quot;dht-enabled:&quot;: " \
   -i "dhtenabled[. = '0']" -o "false" -b \
