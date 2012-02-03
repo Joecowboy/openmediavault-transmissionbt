@@ -300,7 +300,7 @@ Ext.extend(OMV.Module.Services.TransmissionBT.Admin.SettingsPanel, OMV.FormPanel
                                     width: 300,
                                     value: "",
                                     plugins: [ OMV.form.plugins.FieldInfo ],
-                                    infoText: "Path to script."
+                                    infoText: "Enter path to script. Script has to be chmod +x to run."
                            }]
 		}];
 	},
