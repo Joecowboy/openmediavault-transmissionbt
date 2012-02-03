@@ -279,6 +279,29 @@ Ext.extend(OMV.Module.Services.TransmissionBT.Admin.SettingsPanel, OMV.FormPanel
 				plugins: [ OMV.form.plugins.FieldInfo ],
 				infoText: "The URL of the blocklist."
 			}]
+		},{
+                           xtype: "fieldset",
+                           title: "Script to Proccess After Torrent Finishes",
+                           defaults: {
+                                   labelSeparator: ""
+                           },
+                           items: [{
+                                    xtype: "checkbox",
+                                    name: "script-torrent-done-enabled",
+                                    fieldLabel: "Enable",
+                                    checked: false,
+                                    inputValue: 1,
+                                    boxLabel: "Run a script at torrent completion."
+                           },{
+                                    xtype: "textfield",
+                                    name: "script-torrent-done-filename",
+                                    fieldLabel: "Script",
+                                    allowBlank: true,
+                                    width: 300,
+                                    value: "",
+                                    plugins: [ OMV.form.plugins.FieldInfo ],
+                                    infoText: "Path to script."
+                           }]
 		}];
 	},
 
